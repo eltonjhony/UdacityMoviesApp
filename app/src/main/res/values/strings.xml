@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Udacity Movies App</string>
+
+    <string name="movies_label">Movies</string>
+    <string name="search_hint">Find something</string>
+    <string name="data_not_found">Data not found</string>
+    <string name="popular_label">Most popular</string>
+    <string name="now_playing_label">Now Playing</string>
+    <string name="top_rated_label">Top rated</string>
+    <string name="most_popular_label">Popular</string>
+    <string name="no_network_message">There is no internet connection.</string>
+    <string name="failed">An error occurred when open the video</string>
+    <string name="release_date">Release date:</string>
+    <string name="popularity">Popularity:</string>
+    <string name="vote_count">Vote count:</string>
+    <string name="resume">Resume</string>
+    <string name="trailers">Trailers</string>
+    <string name="no_resume_message">This movie does not have a resume yet.</string>
+    <string name="generic_error_message">An unexpected error occurred.</string>
+</resources>

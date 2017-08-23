@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Udacity Movies App</string>
+
+    <string name="movies_label">Filmes</string>
+    <string name="search_hint">Encontre alguma coisa</string>
+    <string name="data_not_found">Dados não encontrados</string>
+    <string name="popular_label">Popular</string>
+    <string name="now_playing_label">Em cartaz</string>
+    <string name="top_rated_label">Mais votados</string>
+    <string name="most_popular_label">Popular</string>
+    <string name="no_network_message">Não há conexão com a internet.</string>
+    <string name="failed">Um error ocorreu ao abrir o video</string>
+    <string name="release_date">Data de lançamento:</string>
+    <string name="popularity">Popularidade:</string>
+    <string name="vote_count">Número de votos:</string>
+    <string name="resume">Resumo</string>
+    <string name="trailers">Trailers</string>
+    <string name="no_resume_message">Este filme ainda não possui uma sinopse.</string>
+    <string name="generic_error_message">Um erro inesperado aconteceu</string>
+</resources>

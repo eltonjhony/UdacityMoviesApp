@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/detail_layout_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:orientation="vertical"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin">
+
+            <RelativeLayout
+                android:id="@+id/container_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/poster_image_view"
+                    android:layout_width="100dp"
+                    android:layout_height="140dp"
+                    android:src="@mipmap/ic_launcher"
+                    android:scaleType="centerCrop" />
+
+                <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                    android:id="@+id/view_release_date_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/default_text_size"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:paddingLeft="@dimen/form_values_padding"
+                    android:layout_toRightOf="@+id/poster_image_view"
+                    android:text="@string/release_date" />
+
+                <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                    android:id="@+id/view_release_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/default_text_size"
+                    android:textColor="@color/colorWhite"
+                    android:paddingLeft="@dimen/form_values_padding"
+                    android:layout_toRightOf="@+id/view_release_date_label" />
+
+                <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                    android:id="@+id/view_popularity_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="@dimen/default_text_size"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:paddingLeft="@dimen/form_values_padding"
+                    android:layout_toRightOf="@+id/poster_image_view"
+                    android:layout_below="@+id/view_release_date"
+                    android:text="@string/popularity" />
+
+                <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                    android:id="@+id/view_popularity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="@dimen/default_text_size"
+                    android:textColor="@color/colorWhite"
+                    android:paddingLeft="@dimen/form_values_padding"
+                    android:layout_toRightOf="@+id/view_popularity_label"
+                    android:layout_below="@+id/view_release_date" />
+
+                <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                    android:id="@+id/view_vote_count_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="@dimen/default_text_size"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:paddingLeft="@dimen/form_values_padding"
+                    android:layout_toRightOf="@+id/poster_image_view"
+                    android:layout_below="@+id/view_popularity"
+                    android:text="@string/vote_count" />
+
+                <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                    android:id="@+id/view_vote_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="@dimen/default_text_size"
+                    android:textColor="@color/colorWhite"
+                    android:paddingLeft="@dimen/form_values_padding"
+                    android:layout_toRightOf="@+id/view_vote_count_label"
+                    android:layout_below="@+id/view_popularity" />
+
+                <RatingBar
+                    android:id="@+id/view_vote_average"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleX="0.5"
+                    android:scaleY="0.5"
+                    android:transformPivotX="0dp"
+                    android:layout_marginTop="@dimen/form_values_padding"
+                    android:paddingLeft="@dimen/form_values_padding"
+                    android:progressTint="@color/colorGold"
+                    android:secondaryProgressTint="@color/colorPrimaryDark"
+                    android:layout_toRightOf="@+id/poster_image_view"
+                    android:layout_below="@+id/view_vote_count"
+                    android:rating="5.0"
+                    android:stepSize="0.05"
+                    android:max="5"
+                    android:isIndicator="true"
+                    android:numStars="5" />
+
+            </RelativeLayout>
+
+            <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                android:id="@+id/resume_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/container_top"
+                android:textColor="@color/colorWhite"
+                android:paddingTop="10dp"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:text="@string/resume" />
+
+                <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                    android:id="@+id/summary_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:textColor="@color/colorWhite" />
+
+            <com.helabs.eltonjhony.udacitymovies.ui.RalewayTextView
+                android:id="@+id/trailer_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/summary_text_view"
+                android:textColor="@color/colorWhite"
+                android:paddingTop="20dp"
+                android:text="@string/trailers" />
+
+            <FrameLayout
+                android:id="@+id/container_trailer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:background="@color/colorPrimaryDark"
+                android:layout_below="@+id/trailer_text_view"
+                android:layout_marginTop="10dp"
+                tools:context=".details.DetailsActivity"/>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</layout>
