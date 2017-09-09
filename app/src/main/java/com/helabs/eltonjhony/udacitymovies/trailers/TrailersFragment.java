@@ -14,9 +14,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.helabs.eltonjhony.udacitymovies.R;
+import com.helabs.eltonjhony.udacitymovies.bus.UpdateTrailersEvent;
 import com.helabs.eltonjhony.udacitymovies.common.BaseFragment;
 import com.helabs.eltonjhony.udacitymovies.data.model.Video;
 import com.helabs.eltonjhony.udacitymovies.databinding.FragmentTrailerBinding;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -70,9 +73,15 @@ public class TrailersFragment extends BaseFragment implements TrailersContract.V
 
     @Override
     public void showTrailers(List<Video> trailers) {
+        EventBus.getDefault().post(new UpdateTrailersEvent(true));
         for (Video video : trailers) {
             mPresenter.loadThumbnail(video, video.getThumbnail());
         }
+    }
+
+    @Override
+    public void hideTrailerSection() {
+        EventBus.getDefault().post(new UpdateTrailersEvent(false));
     }
 
     @Override

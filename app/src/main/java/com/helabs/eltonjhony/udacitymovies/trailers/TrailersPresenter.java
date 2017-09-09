@@ -54,7 +54,11 @@ public class TrailersPresenter extends BasePresenter<TrailersContract.View> impl
 
                     @Override
                     public void onNext(VideoWrapper videoWrapper) {
-                        getView().showTrailers(videoWrapper.getResults());
+                        if (videoWrapper != null && !videoWrapper.getResults().isEmpty()) {
+                            getView().showTrailers(videoWrapper.getResults());
+                        } else {
+                            getView().hideTrailerSection();
+                        }
                     }
                 });
     }

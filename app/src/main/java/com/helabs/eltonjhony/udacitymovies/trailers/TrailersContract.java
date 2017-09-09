@@ -20,6 +20,8 @@ public interface TrailersContract {
         void addTrailerToGallery(Video video, Bitmap bitmap);
 
         void showError(String message);
+
+        void hideTrailerSection();
     }
 
     interface Actions {

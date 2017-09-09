@@ -1,11 +1,11 @@
 package com.helabs.eltonjhony.udacitymovies.data.remote;
 
 import com.helabs.eltonjhony.udacitymovies.data.exceptions.ApiException;
-import com.helabs.eltonjhony.udacitymovies.data.exceptions.FeaturedVideoException;
 import com.helabs.eltonjhony.udacitymovies.data.model.DataResultWrapper;
 import com.helabs.eltonjhony.udacitymovies.data.model.Movie;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.data.model.VideoWrapper;
+import com.helabs.eltonjhony.udacitymovies.infrastructure.MyLog;
 
 import retrofit2.Response;
 import rx.Observable;
@@ -35,7 +35,8 @@ public abstract class BaseDataSource {
     public Observable<VideoWrapper> handleVideosResponse(Response<VideoWrapper> response) {
         ErrorHandler.Error error = handleError(response);
         if (error != null) {
-            return Observable.error(new FeaturedVideoException(error.getErrorMessage()));
+            MyLog.error(error.getErrorMessage());
+            return Observable.just(null);
         }
         return Observable.just(response.body());
     }

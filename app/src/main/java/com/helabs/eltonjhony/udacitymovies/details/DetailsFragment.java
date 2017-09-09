@@ -12,8 +12,12 @@ import com.helabs.eltonjhony.udacitymovies.common.BaseFragment;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.databinding.FragmentDetailsBinding;
 import com.helabs.eltonjhony.udacitymovies.trailers.TrailersFragment;
+import com.helabs.eltonjhony.udacitymovies.bus.UpdateTrailersEvent;
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.parceler.Parcels;
 
 import javax.inject.Inject;
@@ -41,6 +45,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getApplicationComponent().plus(new DetailsModule(this)).inject(this);
+        EventBus.getDefault().register(this);
     }
 
     @Nullable
@@ -74,6 +79,21 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
                 .beginTransaction()
                 .add(R.id.container_trailer, TrailersFragment.newInstance(movieDetail.getId()))
                 .commit();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(UpdateTrailersEvent e) {
+        if (e.isTrailersLoaded()) {
+            getLayout().trailerTextView.setVisibility(View.VISIBLE);
+        } else {
+            getLayout().trailerTextView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
