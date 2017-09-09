@@ -48,7 +48,7 @@ public class RemoteMoviesDataSource extends BaseDataSource implements MoviesData
         return this.getMovieEndpointByType(contentType, page)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(this::handleMovieResponse);
+                .flatMap(this::handleServerResponse);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RemoteMoviesDataSource extends BaseDataSource implements MoviesData
         return this.mApi.searchMovies(getApiKey(), language, query, page)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(this::handleMovieResponse);
+                .flatMap(this::handleServerResponse);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class RemoteMoviesDataSource extends BaseDataSource implements MoviesData
         return this.mApi.getMovieById(movieId, language, getApiKey())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(this::handleMovieDetailResponse);
+                .flatMap(this::handleServerResponse);
     }
 
     private Observable<Response<DataResultWrapper<Movie>>> getMovieEndpointByType(@ContentType int contentType, int offSet) {

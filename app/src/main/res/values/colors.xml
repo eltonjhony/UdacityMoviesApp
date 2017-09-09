@@ -5,6 +5,8 @@
     <color name="colorAccent">#01579B</color>
     <color name="colorTranslucentBlack">#4D000000</color>
     <color name="colorWhite">#fff</color>
+    <color name="yelloWhite">#FFF9C4</color>
+    <color name="grayWhite">#F5F5F5</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGold">#FDD835</color>
 </resources>

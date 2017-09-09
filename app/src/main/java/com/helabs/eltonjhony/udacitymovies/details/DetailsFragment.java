@@ -11,6 +11,7 @@ import com.helabs.eltonjhony.udacitymovies.R;
 import com.helabs.eltonjhony.udacitymovies.common.BaseFragment;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.databinding.FragmentDetailsBinding;
+import com.helabs.eltonjhony.udacitymovies.reviews.ReviewsFragment;
 import com.helabs.eltonjhony.udacitymovies.trailers.TrailersFragment;
 import com.helabs.eltonjhony.udacitymovies.bus.UpdateTrailersEvent;
 import com.squareup.picasso.Picasso;
@@ -74,10 +75,16 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
         mPresenter.defineOverviewMessage(movieDetail.getOverview());
 
-        // inflate trailers fragment
+        // inflating trailers fragment
         getChildFragmentManager()
                 .beginTransaction()
                 .add(R.id.container_trailer, TrailersFragment.newInstance(movieDetail.getId()))
+                .commit();
+
+        // inflating reviews fragment
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.container_reviews, ReviewsFragment.newInstance(movieDetail.getId()))
                 .commit();
     }
 

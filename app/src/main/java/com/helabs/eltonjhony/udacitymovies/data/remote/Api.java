@@ -3,6 +3,7 @@ package com.helabs.eltonjhony.udacitymovies.data.remote;
 import com.helabs.eltonjhony.udacitymovies.data.model.DataResultWrapper;
 import com.helabs.eltonjhony.udacitymovies.data.model.Movie;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
+import com.helabs.eltonjhony.udacitymovies.data.model.Review;
 import com.helabs.eltonjhony.udacitymovies.data.model.VideoWrapper;
 
 import retrofit2.Response;
@@ -34,4 +35,6 @@ public interface Api {
     @GET("./movie/{movieId}")
     Observable<Response<MovieDetail>> getMovieById(@Path("movieId") String movieId, @Query("language") String language, @Query("api_key") String apiKey);
 
+    @GET("./movie/{movieId}/reviews")
+    Observable<Response<DataResultWrapper<Review>>> getReviews(@Path("movieId") String movieId, @Query("api_key") String apiKey, @Query("language") String language);
 }

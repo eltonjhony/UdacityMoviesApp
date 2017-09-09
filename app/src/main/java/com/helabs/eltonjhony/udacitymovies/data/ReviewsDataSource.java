@@ -11,5 +11,5 @@ import rx.Observable;
 
 public interface ReviewsDataSource {
 
-    Observable<DataResultWrapper<Review>> findUserReviews(Integer movieId, String language);
+    Observable<DataResultWrapper<Review>> findUserReviews(String movieId);
 }

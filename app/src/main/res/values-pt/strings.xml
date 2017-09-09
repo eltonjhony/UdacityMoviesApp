@@ -17,4 +17,5 @@
     <string name="trailers">Trailers</string>
     <string name="no_resume_message">Este filme ainda não possui uma sinopse.</string>
     <string name="generic_error_message">Um erro inesperado aconteceu</string>
+    <string name="says_label">Diz</string>
 </resources>

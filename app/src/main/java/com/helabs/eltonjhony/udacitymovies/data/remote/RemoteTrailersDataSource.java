@@ -2,9 +2,11 @@ package com.helabs.eltonjhony.udacitymovies.data.remote;
 
 import com.helabs.eltonjhony.udacitymovies.data.TrailersDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.model.VideoWrapper;
+import com.helabs.eltonjhony.udacitymovies.infrastructure.MyLog;
 
 import javax.inject.Inject;
 
+import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -29,6 +31,16 @@ public class RemoteTrailersDataSource extends BaseDataSource implements Trailers
         return this.mApi.getVideosById(movieId, getApiKey())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(this::handleVideosResponse);
+                .flatMap(this::handleServerResponse);
+    }
+
+    @Override
+    protected <T> Observable<T> handleServerResponse(Response<T> response) {
+        ErrorHandler.Error error = handleError(response);
+        if (error != null) {
+            MyLog.error(error.getErrorMessage());
+            return Observable.just(null);
+        }
+        return Observable.just(response.body());
     }
 }

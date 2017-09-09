@@ -6,6 +6,8 @@ import com.helabs.eltonjhony.udacitymovies.infrastructure.ApplicationMessages;
 import com.helabs.eltonjhony.udacitymovies.details.DetailsSubComponent;
 import com.helabs.eltonjhony.udacitymovies.details.DetailsModule;
 import com.helabs.eltonjhony.udacitymovies.movies.MoviesModule;
+import com.helabs.eltonjhony.udacitymovies.reviews.ReviewsModule;
+import com.helabs.eltonjhony.udacitymovies.reviews.ReviewsSubComponent;
 import com.helabs.eltonjhony.udacitymovies.trailers.TrailersModule;
 import com.helabs.eltonjhony.udacitymovies.movies.MoviesSubComponent;
 import com.helabs.eltonjhony.udacitymovies.trailers.TrailersSubComponent;
@@ -25,6 +27,7 @@ public interface ApplicationComponent {
     MoviesSubComponent plus(MoviesModule module);
     DetailsSubComponent plus(DetailsModule module);
     TrailersSubComponent plus(TrailersModule module);
+    ReviewsSubComponent plus(ReviewsModule module);
 
     Context getContext();
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -150,12 +149,19 @@
             <FrameLayout
                 android:id="@+id/container_trailer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:background="@color/colorPrimaryDark"
                 android:layout_below="@+id/trailer_text_view"
-                android:layout_marginTop="10dp"
-                tools:context=".details.DetailsActivity"/>
+                android:layout_marginTop="10dp"/>
+
+            <FrameLayout
+                android:id="@+id/container_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:background="@color/colorPrimaryDark"
+                android:layout_below="@+id/container_trailer" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

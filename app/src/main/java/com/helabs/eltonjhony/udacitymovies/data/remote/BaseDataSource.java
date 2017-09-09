@@ -1,11 +1,6 @@
 package com.helabs.eltonjhony.udacitymovies.data.remote;
 
 import com.helabs.eltonjhony.udacitymovies.data.exceptions.ApiException;
-import com.helabs.eltonjhony.udacitymovies.data.model.DataResultWrapper;
-import com.helabs.eltonjhony.udacitymovies.data.model.Movie;
-import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
-import com.helabs.eltonjhony.udacitymovies.data.model.VideoWrapper;
-import com.helabs.eltonjhony.udacitymovies.infrastructure.MyLog;
 
 import retrofit2.Response;
 import rx.Observable;
@@ -16,7 +11,7 @@ import rx.Observable;
 
 public abstract class BaseDataSource {
 
-    public Observable<DataResultWrapper<Movie>> handleMovieResponse(Response<DataResultWrapper<Movie>> response) {
+    protected <T> Observable<T> handleServerResponse(Response<T> response) {
         ErrorHandler.Error error = handleError(response);
         if (error != null) {
             return Observable.error(new ApiException(error.getErrorMessage()));
@@ -24,24 +19,7 @@ public abstract class BaseDataSource {
         return Observable.just(response.body());
     }
 
-    public Observable<MovieDetail> handleMovieDetailResponse(Response<MovieDetail> response) {
-        ErrorHandler.Error error = handleError(response);
-        if (error != null) {
-            return Observable.error(new ApiException(error.getErrorMessage()));
-        }
-        return Observable.just(response.body());
-    }
-
-    public Observable<VideoWrapper> handleVideosResponse(Response<VideoWrapper> response) {
-        ErrorHandler.Error error = handleError(response);
-        if (error != null) {
-            MyLog.error(error.getErrorMessage());
-            return Observable.just(null);
-        }
-        return Observable.just(response.body());
-    }
-
-    private <T> ErrorHandler.Error handleError(Response<T> response) {
+    protected  <T> ErrorHandler.Error handleError(Response<T> response) {
         int code = response.code();
         if (code != 200) {
             return new ErrorHandler(response.errorBody()).extract();

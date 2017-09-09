@@ -1,5 +1,7 @@
 package com.helabs.eltonjhony.udacitymovies.di;
 
+import com.helabs.eltonjhony.udacitymovies.data.remote.RemoteReviewsDataSource;
+import com.helabs.eltonjhony.udacitymovies.data.repository.ReviewsRepository;
 import com.helabs.eltonjhony.udacitymovies.infrastructure.ApplicationMessages;
 import com.helabs.eltonjhony.udacitymovies.data.remote.RetrofitClient;
 import com.helabs.eltonjhony.udacitymovies.data.repository.MoviesRepository;
@@ -48,5 +50,17 @@ public class RepositoryModule {
     @Provides
     TrailersRepository provideTrailersRepository(RemoteTrailersDataSource remoteTrailersDataSource) {
         return new TrailersRepository(remoteTrailersDataSource);
+    }
+
+    @Singleton
+    @Provides
+    RemoteReviewsDataSource provideReviewsDataSource(Api api, NetworkUtil networkUtil, ApplicationMessages applicationMessages) {
+        return new RemoteReviewsDataSource(api, networkUtil, applicationMessages);
+    }
+
+    @Singleton
+    @Provides
+    ReviewsRepository provideReviewsRepository(RemoteReviewsDataSource dataSource) {
+        return new ReviewsRepository(dataSource);
     }
 }
