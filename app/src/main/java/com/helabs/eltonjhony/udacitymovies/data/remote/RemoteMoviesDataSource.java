@@ -11,6 +11,7 @@ import com.helabs.eltonjhony.udacitymovies.utils.NetworkUtil;
 
 import javax.inject.Inject;
 
+import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -24,7 +25,7 @@ import static com.helabs.eltonjhony.udacitymovies.data.model.ContentType.TOP_RAT
 /**
  * Created by eltonjhony on 05/06/17.
  */
-public class RemoteMoviesDataSource implements MoviesDataSource {
+public class RemoteMoviesDataSource extends BaseDataSource implements MoviesDataSource {
 
     private Api mApi;
     private ApplicationMessages applicationMessages;
@@ -38,59 +39,55 @@ public class RemoteMoviesDataSource implements MoviesDataSource {
     }
 
     @Override
-    public Observable<DataResultWrapper<Movie>> loadMovies(@ContentType int contentType, int page)
-            throws NoInternetException {
+    public Observable<DataResultWrapper<Movie>> loadMovies(@ContentType int contentType, int page) {
 
         if (!networkUtil.isNetworkAvailable()) {
-            throw new NoInternetException(applicationMessages.getNoNetworkAvailableMessage());
+            return Observable.error(new NoInternetException(applicationMessages.getNoNetworkAvailableMessage()));
         }
 
         return this.getMovieEndpointByType(contentType, page)
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(this::handleMovieResponse);
     }
 
     @Override
-    public Observable<DataResultWrapper<Movie>> searchMovies(String language, String query, int page)
-            throws NoInternetException {
+    public Observable<DataResultWrapper<Movie>> searchMovies(String language, String query, int page) {
 
         if (!networkUtil.isNetworkAvailable()) {
-            throw new NoInternetException(applicationMessages.getNoNetworkAvailableMessage());
+            return Observable.error(new NoInternetException(applicationMessages.getNoNetworkAvailableMessage()));
         }
 
         return this.mApi.searchMovies(getApiKey(), language, query, page)
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(this::handleMovieResponse);
     }
 
     @Override
-    public Observable<MovieDetail> getMovieById(String movieId, String language) throws NoInternetException {
+    public Observable<MovieDetail> getMovieById(String movieId, String language) {
 
         if (!networkUtil.isNetworkAvailable()) {
-            throw new NoInternetException(applicationMessages.getNoNetworkAvailableMessage());
+            return Observable.error(new NoInternetException(applicationMessages.getNoNetworkAvailableMessage()));
         }
 
         return this.mApi.getMovieById(movieId, language, getApiKey())
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(this::handleMovieDetailResponse);
     }
 
-    private Observable<DataResultWrapper<Movie>> getMovieEndpointByType(@ContentType int contentType, int offSet) {
-        Observable<DataResultWrapper<Movie>> observable;
+    private Observable<Response<DataResultWrapper<Movie>>> getMovieEndpointByType(@ContentType int contentType, int offSet) {
         switch (contentType) {
             case POPULAR:
-                observable = mApi.fetchPopularMovies(getApiKey(), getLanguage(), offSet);
-                break;
+                return mApi.fetchPopularMovies(getApiKey(), getLanguage(), offSet);
             case NOW_PLAYING:
-                observable = mApi.fetchNowPlayingMovies(getApiKey(), getLanguage(), offSet);
-                break;
+                return mApi.fetchNowPlayingMovies(getApiKey(), getLanguage(), offSet);
             case TOP_RATED:
-                observable = mApi.fetchTopRatedMovies(getApiKey(), getLanguage(), offSet);
-                break;
+                return mApi.fetchTopRatedMovies(getApiKey(), getLanguage(), offSet);
             default:
                 throw new RuntimeException("Invalid option " + contentType);
         }
-        return observable;
     }
 
 }

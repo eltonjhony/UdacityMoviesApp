@@ -25,16 +25,16 @@ android {
 
             buildConfigField("int", "LOG_LEVEL", "0")
             buildConfigField("String", "BASE_URL", "\"http://api.themoviedb.org/3/\"")
-            buildConfigField("String", "API_KEY", "\"PUT_YOUR_API_KEY_HERE\"")
-            buildConfigField("String", "YOUTUBE_KEY", "\"PUT_YOUR_YT_KEY_HERE\t\"")
+            buildConfigField("String", "API_KEY", "\"1de4f2865be37bb3dc6c0fc2fc9e6b13\"")
+            buildConfigField("String", "YOUTUBE_KEY", "\"AIzaSyCWPxn6hzhqgNOkk8Zb0Bf3QW31BSl1vIM\t\"")
         }
         debug {
             minifyEnabled false
 
             buildConfigField("int", "LOG_LEVEL", "4")
             buildConfigField("String", "BASE_URL", "\"http://api.themoviedb.org/3/\"")
-            buildConfigField("String", "API_KEY", "\"PUT_YOUR_API_KEY_HERE\"")
-            buildConfigField("String", "YOUTUBE_KEY", "\"PUT_YOUR_YT_KEY_HERE\t\"")
+            buildConfigField("String", "API_KEY", "\"1de4f2865be37bb3dc6c0fc2fc9e6b13\"")
+            buildConfigField("String", "YOUTUBE_KEY", "\"AIzaSyCWPxn6hzhqgNOkk8Zb0Bf3QW31BSl1vIM\t\"")
         }
     }
     compileOptions {

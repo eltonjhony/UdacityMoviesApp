@@ -9,7 +9,6 @@ import com.helabs.eltonjhony.udacitymovies.data.repository.TrailersRepository;
 import com.helabs.eltonjhony.udacitymovies.infrastructure.MyLog;
 import com.helabs.eltonjhony.udacitymovies.data.model.Video;
 import com.helabs.eltonjhony.udacitymovies.data.model.VideoWrapper;
-import com.helabs.eltonjhony.udacitymovies.data.remote.ErrorHandler;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;
@@ -50,8 +49,7 @@ public class TrailersPresenter extends BasePresenter<TrailersContract.View> impl
 
                     @Override
                     public void onError(Throwable e) {
-                        ErrorHandler.Error error = new ErrorHandler(e).extract();
-                        getView().showError(error.message);
+                        getView().showError(e.getMessage());
                     }
 
                     @Override
@@ -75,8 +73,7 @@ public class TrailersPresenter extends BasePresenter<TrailersContract.View> impl
 
                     @Override
                     public void onError(Throwable e) {
-                        ErrorHandler.Error error = new ErrorHandler(e).extract();
-                        getView().showError(error.message);
+                        getView().showError(e.getMessage());
                     }
 
                     @Override

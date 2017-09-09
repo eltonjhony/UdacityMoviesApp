@@ -144,6 +144,7 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
 
     @Override
     public void appendMoreMovies(List<Movie> data) {
+        mScrollListener.setLoading(false);
         this.mAdapter.appendData(data);
     }
 
@@ -178,6 +179,7 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
         mScrollListener = new EndlessRecyclerViewScrollListener(mLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemCount, RecyclerView recyclerView) {
+                setLoading(true);
                 mPresenter.fetchOrSearchMovies(getCurrentQuery(), mContentType, page);
             }
         };

@@ -4,12 +4,10 @@ import android.support.annotation.NonNull;
 
 import com.helabs.eltonjhony.udacitymovies.common.BasePresenter;
 import com.helabs.eltonjhony.udacitymovies.data.repository.MoviesRepository;
-import com.helabs.eltonjhony.udacitymovies.data.exceptions.NoInternetException;
 import com.helabs.eltonjhony.udacitymovies.data.model.ContentType;
 import com.helabs.eltonjhony.udacitymovies.data.model.DataResultWrapper;
 import com.helabs.eltonjhony.udacitymovies.data.model.Movie;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
-import com.helabs.eltonjhony.udacitymovies.data.remote.ErrorHandler;
 
 import java.lang.ref.WeakReference;
 
@@ -49,100 +47,82 @@ public class MoviesPresenter extends BasePresenter<MoviesContract.View> implemen
     @Override
     public void loadMovies(@ContentType int contentType, int offSet) {
         getView().setLoading(true);
-        try {
-            mSubscription = this.mMoviesRepository.loadMovies(contentType, offSet)
-                    .subscribe(new Observer<DataResultWrapper<Movie>>() {
-                        @Override
-                        public void onCompleted() {
-                            getViewOrThrow().setLoading(false);
-                        }
+        mSubscription = this.mMoviesRepository.loadMovies(contentType, offSet)
+                .subscribe(new Observer<DataResultWrapper<Movie>>() {
+                    @Override
+                    public void onCompleted() {
+                        getViewOrThrow().setLoading(false);
+                    }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            ErrorHandler.Error error = new ErrorHandler(e).extract();
-                            getViewOrThrow().showError(error.message);
-                            getViewOrThrow().setLoading(false);
-                        }
+                    @Override
+                    public void onError(Throwable e) {
+                        getViewOrThrow().showError(e.getMessage());
+                        getViewOrThrow().setLoading(false);
+                    }
 
-                        @Override
-                        public void onNext(DataResultWrapper<Movie> dataResultWrapper) {
-                            if (dataResultWrapper.getPage() == FIRST_PAGE) {
-                                getViewOrThrow().showMovies(dataResultWrapper.getData());
-                                getViewOrThrow().setupFeaturedVideo(dataResultWrapper.getVideoKey());
-                            } else {
-                                getViewOrThrow().appendMoreMovies(dataResultWrapper.getData());
-                            }
+                    @Override
+                    public void onNext(DataResultWrapper<Movie> dataResultWrapper) {
+                        if (dataResultWrapper.getPage() == FIRST_PAGE) {
+                            getViewOrThrow().showMovies(dataResultWrapper.getData());
+                            getViewOrThrow().setupFeaturedVideo(dataResultWrapper.getVideoKey());
+                        } else {
+                            getViewOrThrow().appendMoreMovies(dataResultWrapper.getData());
                         }
-                    });
+                    }
+                });
 
-        } catch (NoInternetException e) {
-            getView().setLoading(false);
-            getView().showError(e.getMessage());
-        }
     }
 
     @Override
     public void searchMovies(String query, int offSet) {
         getView().setLoading(true);
-        try {
-            mSubscription = this.mMoviesRepository.searchMovies(getLanguage(), query, offSet)
-                    .subscribe(new Observer<DataResultWrapper<Movie>>() {
-                        @Override
-                        public void onCompleted() {
-                            getViewOrThrow().setLoading(false);
-                            mSubscription.unsubscribe();
-                        }
+        mSubscription = this.mMoviesRepository.searchMovies(getLanguage(), query, offSet)
+                .subscribe(new Observer<DataResultWrapper<Movie>>() {
+                    @Override
+                    public void onCompleted() {
+                        getViewOrThrow().setLoading(false);
+                        mSubscription.unsubscribe();
+                    }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            ErrorHandler.Error error = new ErrorHandler(e).extract();
-                            getViewOrThrow().setLoading(false);
-                            getViewOrThrow().showError(error.message);
-                        }
+                    @Override
+                    public void onError(Throwable e) {
+                        getViewOrThrow().showError(e.getMessage());
+                        getViewOrThrow().setLoading(false);
+                    }
 
-                        @Override
-                        public void onNext(DataResultWrapper<Movie> dataResultWrapper) {
-                            if (dataResultWrapper.getPage() == 1) {
-                                getViewOrThrow().showMovies(dataResultWrapper.getData());
-                            } else {
-                                getViewOrThrow().appendMoreMovies(dataResultWrapper.getData());
-                            }
+                    @Override
+                    public void onNext(DataResultWrapper<Movie> dataResultWrapper) {
+                        if (dataResultWrapper.getPage() == 1) {
+                            getViewOrThrow().showMovies(dataResultWrapper.getData());
+                        } else {
+                            getViewOrThrow().appendMoreMovies(dataResultWrapper.getData());
                         }
-                    });
-        } catch (NoInternetException e) {
-            getView().setLoading(false);
-            getView().showError(e.getMessage());
-        }
+                    }
+                });
     }
 
     @Override
     public void openDetails(@NonNull String id) {
         getView().setLoading(true);
-        try {
-            mSubscription = this.mMoviesRepository.getMovieById(id, getLanguage())
-                    .subscribe(new Observer<MovieDetail>() {
-                        @Override
-                        public void onCompleted() {
-                            getViewOrThrow().setLoading(false);
-                            mSubscription.unsubscribe();
-                        }
+        mSubscription = this.mMoviesRepository.getMovieById(id, getLanguage())
+                .subscribe(new Observer<MovieDetail>() {
+                    @Override
+                    public void onCompleted() {
+                        getViewOrThrow().setLoading(false);
+                        mSubscription.unsubscribe();
+                    }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            ErrorHandler.Error error = new ErrorHandler(e).extract();
-                            getViewOrThrow().showError(error.message);
-                            getViewOrThrow().setLoading(false);
-                        }
+                    @Override
+                    public void onError(Throwable e) {
+                        getViewOrThrow().showError(e.getMessage());
+                        getViewOrThrow().setLoading(false);
+                    }
 
-                        @Override
-                        public void onNext(MovieDetail movieDetail) {
-                            getViewOrThrow().showMovieDetails(movieDetail);
-                        }
-                    });
-        } catch (NoInternetException e) {
-            getView().setLoading(false);
-            getView().showError(e.getMessage());
-        }
+                    @Override
+                    public void onNext(MovieDetail movieDetail) {
+                        getViewOrThrow().showMovieDetails(movieDetail);
+                    }
+                });
     }
 
     @Override

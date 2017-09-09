@@ -8,6 +8,7 @@ public abstract class ResponseWrapper {
 
     private int httpCode = 0;
     String httpResponseMsg = null;
+    private boolean error;
 
     public int getHttpCode() {
         return httpCode;
@@ -23,5 +24,13 @@ public abstract class ResponseWrapper {
 
     public void setHttpResponseMsg(String httpResponseMsg) {
         this.httpResponseMsg = httpResponseMsg;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
+
+    public boolean isError() {
+        return error;
     }
 }

@@ -15,7 +15,7 @@ import static com.helabs.eltonjhony.udacitymovies.infrastructure.ApplicationConf
  * Created by eltonjhony on 05/06/17.
  */
 
-public class RemoteTrailersDataSource implements TrailersDataSource {
+public class RemoteTrailersDataSource extends BaseDataSource implements TrailersDataSource {
 
     private Api mApi;
 
@@ -28,6 +28,7 @@ public class RemoteTrailersDataSource implements TrailersDataSource {
     public Observable<VideoWrapper> getVideosById(String movieId) {
         return this.mApi.getVideosById(movieId, getApiKey())
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(this::handleVideosResponse);
     }
 }

@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import okhttp3.ResponseBody;
-import retrofit2.adapter.rxjava.HttpException;
 
 import static com.helabs.eltonjhony.udacitymovies.MyApplication.getApplication;
 import static com.helabs.eltonjhony.udacitymovies.data.remote.ErrorHandler.Error.GENERIC_CODE;
@@ -20,26 +19,21 @@ import static com.helabs.eltonjhony.udacitymovies.data.remote.ErrorHandler.Error
  */
 public class ErrorHandler {
 
-    private Throwable t;
+    private ResponseBody body;
 
-    public ErrorHandler(Throwable t) {
-        this.t = t;
+    public ErrorHandler(ResponseBody body) {
+        this.body = body;
     }
 
     public Error extract() {
-        MyLog.error(ErrorHandler.class.getSimpleName(), t.getMessage());
-        if (t instanceof HttpException) {
-            ResponseBody body = ((HttpException) t).response().errorBody();
-            try {
-                Gson gson = new Gson();
-                Error error = gson.fromJson(body.string(), Error.class);
-                MyLog.error(error.code, error.message);
-                return new Error(error.getErrorCode(), error.getErrorMessage());
-            } catch (Exception e) {
-                return new Error(GENERIC_CODE, GENERIC_MESSAGE);
-            }
+        try {
+            Gson gson = new Gson();
+            Error error = gson.fromJson(body.string(), Error.class);
+            MyLog.error(error.code, error.message);
+            return new Error(error.getErrorCode(), error.getErrorMessage());
+        } catch (Exception e) {
+            return new Error(GENERIC_CODE, GENERIC_MESSAGE);
         }
-        return new Error(GENERIC_CODE, GENERIC_MESSAGE);
     }
 
     public static class Error implements Serializable {
@@ -62,10 +56,6 @@ public class ErrorHandler {
         public Error(int code, String message) {
             this.code = code;
             this.message = message;
-        }
-
-        public Error(List<String> errors) {
-            this.errors = errors;
         }
 
         public int getErrorCode() {
