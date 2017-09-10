@@ -129,8 +129,7 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
         if (getView() == null) {
             return;
         }
-        final SwipeRefreshLayout srl = mBinding.refreshLayout;
-        srl.post(() -> srl.setRefreshing(isActive));
+        getLayout().refreshLayout.post(() -> getLayout().refreshLayout.setRefreshing(isActive));
     }
 
     @Override
@@ -200,9 +199,8 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
 
         getLayout().movieList.addOnScrollListener(mScrollListener);
 
-        getLayout().refreshLayout.setOnRefreshListener(() -> {
-            mPresenter.fetchOrSearchMovies(getCurrentQuery(), getContentType(), INITIAL_OFF_SET);
-        });
+        getLayout().refreshLayout.setRefreshing(false);
+        getLayout().refreshLayout.setEnabled(false);
     }
 
     private void setupAdapter() {

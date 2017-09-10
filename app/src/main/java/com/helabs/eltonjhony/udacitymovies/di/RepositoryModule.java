@@ -1,7 +1,7 @@
 package com.helabs.eltonjhony.udacitymovies.di;
 
-import com.helabs.eltonjhony.udacitymovies.data.local.FavoritesDAO;
 import com.helabs.eltonjhony.udacitymovies.data.local.LocalDatabase;
+import com.helabs.eltonjhony.udacitymovies.data.local.LocalFavoritesDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.remote.RemoteReviewsDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.repository.ReviewsRepository;
 import com.helabs.eltonjhony.udacitymovies.infrastructure.ApplicationMessages;
@@ -40,8 +40,8 @@ public class RepositoryModule {
     @Provides
     MoviesRepository provideMoviesRepository(RemoteMoviesDataSource remoteMoviesDataSource,
                                              RemoteTrailersDataSource remoteTrailersDataSource,
-                                             LocalDatabase localDatabase) {
-        return new MoviesRepository(remoteMoviesDataSource, remoteTrailersDataSource, localDatabase);
+                                             LocalFavoritesDataSource localFavoritesDataSource) {
+        return new MoviesRepository(remoteMoviesDataSource, remoteTrailersDataSource, localFavoritesDataSource);
     }
 
     @Singleton
@@ -66,5 +66,11 @@ public class RepositoryModule {
     @Provides
     ReviewsRepository provideReviewsRepository(RemoteReviewsDataSource dataSource) {
         return new ReviewsRepository(dataSource);
+    }
+
+    @Singleton
+    @Provides
+    LocalFavoritesDataSource provideLocalFavoritesDataSource(LocalDatabase localDatabase) {
+        return new LocalFavoritesDataSource(localDatabase);
     }
 }

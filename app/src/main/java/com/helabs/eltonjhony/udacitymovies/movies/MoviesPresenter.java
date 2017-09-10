@@ -46,7 +46,9 @@ public class MoviesPresenter extends BasePresenter<MoviesContract.View> implemen
 
     @Override
     public void loadMovies(@ContentType int contentType, int offSet) {
-        getView().setLoading(true);
+        if (offSet == FIRST_PAGE) {
+            getView().setLoading(true);
+        }
         mSubscription = this.mMoviesRepository.loadMovies(contentType, offSet)
                 .subscribe(new Observer<DataResultWrapper<Movie>>() {
                     @Override
@@ -77,7 +79,9 @@ public class MoviesPresenter extends BasePresenter<MoviesContract.View> implemen
 
     @Override
     public void searchMovies(String query, int offSet) {
-        getView().setLoading(true);
+        if (offSet == FIRST_PAGE) {
+            getView().setLoading(true);
+        }
         mSubscription = this.mMoviesRepository.searchMovies(getLanguage(), query, offSet)
                 .subscribe(new Observer<DataResultWrapper<Movie>>() {
                     @Override

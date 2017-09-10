@@ -1,8 +1,7 @@
 package com.helabs.eltonjhony.udacitymovies.data.repository;
 
 import com.helabs.eltonjhony.udacitymovies.data.MoviesDataSource;
-import com.helabs.eltonjhony.udacitymovies.data.local.FavoritesDAO;
-import com.helabs.eltonjhony.udacitymovies.data.local.LocalDatabase;
+import com.helabs.eltonjhony.udacitymovies.data.local.LocalFavoritesDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.model.ContentType;
 import com.helabs.eltonjhony.udacitymovies.data.model.DataResultWrapper;
 import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
@@ -13,7 +12,9 @@ import com.helabs.eltonjhony.udacitymovies.data.remote.RemoteMoviesDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.remote.RemoteTrailersDataSource;
 import com.helabs.eltonjhony.udacitymovies.utils.ParseUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -25,48 +26,48 @@ import rx.Observable;
 
 public class MoviesRepository implements MoviesDataSource {
 
-    private static final int FIRST_ITEM = 0;
     private static final int FIRST_PAGE = 1;
 
     private RemoteMoviesDataSource mRemoteDataSource;
-    private RemoteTrailersDataSource remoteTrailersDataSource;
-    private FavoritesDAO favoritesDAO;
+    private RemoteTrailersDataSource mRemoteTrailersDataSource;
+    private LocalFavoritesDataSource mLocalFavoritesDataSource;
 
     @Inject
     public MoviesRepository(RemoteMoviesDataSource remoteDataSource,
                             RemoteTrailersDataSource remoteTrailersDataSource,
-                            LocalDatabase localDatabase) {
+                            LocalFavoritesDataSource mLocalFavoritesDataSource) {
         this.mRemoteDataSource = remoteDataSource;
-        this.remoteTrailersDataSource = remoteTrailersDataSource;
-        this.favoritesDAO = new FavoritesDAO(localDatabase);
+        this.mRemoteTrailersDataSource = remoteTrailersDataSource;
+        this.mLocalFavoritesDataSource = mLocalFavoritesDataSource;
     }
 
     @Override
     public Observable<DataResultWrapper<Movie>> loadMovies(@ContentType int contentType, int page) {
 
+        // Get favorites from LocalDataSource
         if (contentType == ContentType.FAVORITE) {
-            final List<Favorites> favorites = favoritesDAO.getAll();
-            return Observable.just(new DataResultWrapper<>(ParseUtils.convertFrom(favorites)));
+            final List<Favorites> favorites = new ArrayList<>();
+            mLocalFavoritesDataSource.loadAllFavorites(favorites::addAll);
+            return Observable.just(new DataResultWrapper<>(ParseUtils.parseFrom(favorites)));
         }
 
-        Observable<DataResultWrapper<Movie>> wrapperObservable = this.mRemoteDataSource
-                .loadMovies(contentType, page);
-
         if (page == FIRST_PAGE) {
-            return wrapperObservable
+            return this.mRemoteDataSource
+                    .loadMovies(contentType, page)
                     .flatMap(movieDataResultWrapper -> {
-                        Movie movie = movieDataResultWrapper.getData().get(FIRST_ITEM);
-                        return remoteTrailersDataSource.getVideosById(movie.getId());
+                        Movie movie = getRandomItem(movieDataResultWrapper.getData());
+                        return mRemoteTrailersDataSource.getVideosById(movie.getId());
             }, (movieDataResultWrapper, videoWrapper) -> {
                 if (videoWrapper != null && !videoWrapper.getResults().isEmpty()) {
-                    Video video = videoWrapper.getResults().get(FIRST_ITEM);
+                    Video video = getRandomItem(videoWrapper.getResults());
                     movieDataResultWrapper.setVideoKey(video.getKey());
                 }
                 return movieDataResultWrapper;
             });
         }
 
-        return wrapperObservable;
+        return this.mRemoteDataSource
+                .loadMovies(contentType, page);
     }
 
     @Override
@@ -77,5 +78,17 @@ public class MoviesRepository implements MoviesDataSource {
     @Override
     public Observable<MovieDetail> getMovieById(String movieId, String language) {
         return this.mRemoteDataSource.getMovieById(movieId, language);
+    }
+
+    private <T> T getRandomItem(List<T> data) {
+        if (data == null || data.isEmpty()) {
+            return null;
+        }
+        Random random = new Random();
+        int i = random.nextInt(data.size());
+        if (i >= data.size()) {
+            return data.get(0);
+        }
+        return data.get(i);
     }
 }

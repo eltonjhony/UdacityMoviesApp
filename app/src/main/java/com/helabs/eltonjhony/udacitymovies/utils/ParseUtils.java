@@ -9,10 +9,12 @@ import java.util.List;
 /**
  * Created by eltonjhony on 09/09/17.
  */
-
 public class ParseUtils {
 
-    public static List<Movie> convertFrom(List<Favorites> favorites) {
+    private ParseUtils() {
+    }
+
+    public static List<Movie> parseFrom(List<Favorites> favorites) {
         List<Movie> movies = new ArrayList<>();
         if (favorites == null) {
             return movies;

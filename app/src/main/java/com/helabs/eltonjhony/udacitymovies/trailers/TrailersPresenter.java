@@ -10,7 +10,9 @@ import com.helabs.eltonjhony.udacitymovies.infrastructure.MyLog;
 import com.helabs.eltonjhony.udacitymovies.data.model.Video;
 import com.helabs.eltonjhony.udacitymovies.data.model.VideoWrapper;
 
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.inject.Inject;
@@ -77,7 +79,7 @@ public class TrailersPresenter extends BasePresenter<TrailersContract.View> impl
 
                     @Override
                     public void onError(Throwable e) {
-                        getView().showError(e.getMessage());
+                        getView().hideTrailerSection();
                     }
 
                     @Override
@@ -99,11 +101,14 @@ public class TrailersPresenter extends BasePresenter<TrailersContract.View> impl
 
     @NonNull
     private Func1<String, Observable<Bitmap>> loadImageBitmap() {
-        return url -> {
+        return src -> {
             try {
-                return Observable.from(new Bitmap[]{BitmapFactory
-                        .decodeStream(new URL(url).openConnection()
-                        .getInputStream())});
+                URL url = new URL(src);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                return Observable.from(new Bitmap[]{BitmapFactory.decodeStream(input)});
             } catch (Exception e) {
                 MyLog.info(e.getMessage());
                 return Observable.from((Bitmap[]) null);

@@ -25,8 +25,7 @@ import static com.helabs.eltonjhony.udacitymovies.infrastructure.Constants.Prefe
 
 public abstract class SearchFragment extends BaseFragment {
 
-    @Inject
-    SearcherPreferences mSearcherPref;
+    @Inject SearcherPreferences mSearcherPref;
 
     private Menu mMenu;
 
