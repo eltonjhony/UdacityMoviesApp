@@ -3,11 +3,16 @@ package com.helabs.eltonjhony.udacitymovies.details;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.helabs.eltonjhony.udacitymovies.R;
+import com.helabs.eltonjhony.udacitymovies.bus.FavoritesUnMarkedEvent;
 import com.helabs.eltonjhony.udacitymovies.common.BaseFragment;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.databinding.FragmentDetailsBinding;
@@ -32,6 +37,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     @Inject DetailsPresenter mPresenter;
 
+    private MovieDetail movieDetail;
+    private Menu mMenu;
     private FragmentDetailsBinding mBinding;
 
     public static DetailsFragment newInstance(MovieDetail movieDetail) {
@@ -47,12 +54,14 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         super.onCreate(savedInstanceState);
         getApplicationComponent().plus(new DetailsModule(this)).inject(this);
         EventBus.getDefault().register(this);
+        movieDetail = Parcels.unwrap(getArguments().getParcelable(MOVIE_ARGS));
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_details, container, false);
+        setHasOptionsMenu(true);
         initialize();
 
         return mBinding.getRoot();
@@ -60,32 +69,6 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     public FragmentDetailsBinding getLayout() {
         return mBinding;
-    }
-
-    private void initialize() {
-
-        MovieDetail movieDetail = Parcels.unwrap(getArguments().getParcelable(MOVIE_ARGS));
-
-        // fill details view information
-        Picasso.with(getActivity()).load(movieDetail.getPosterUrl()).into(getLayout().posterImageView);
-        getLayout().viewReleaseDate.setText(movieDetail.getReleasedDateFormatted());
-        getLayout().viewPopularity.setText(movieDetail.getPopularityConverted());
-        getLayout().viewVoteCount.setText(movieDetail.getVoteCount());
-        getLayout().viewVoteAverage.setRating(movieDetail.getVoteAverageAsFloat());
-
-        mPresenter.defineOverviewMessage(movieDetail.getOverview());
-
-        // inflating trailers fragment
-        getChildFragmentManager()
-                .beginTransaction()
-                .add(R.id.container_trailer, TrailersFragment.newInstance(movieDetail.getId()))
-                .commit();
-
-        // inflating reviews fragment
-        getChildFragmentManager()
-                .beginTransaction()
-                .add(R.id.container_reviews, ReviewsFragment.newInstance(movieDetail.getId()))
-                .commit();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -110,7 +93,68 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.mMenu = menu;
+        inflater.inflate(R.menu.detail_menu, menu);
+        mPresenter.checkFavorites(movieDetail.getId());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.favorite_action:
+                mPresenter.markAsFavorite(movieDetail);
+        }
+
+        return true;
+    }
+
+    @Override
     public void setOverview(String overview) {
         getLayout().summaryTextView.setText(overview);
+    }
+
+    @Override
+    public void favoriteMarked() {
+        mMenu.getItem(0)
+                .setIcon(ContextCompat.getDrawable(getContext(),
+                        R.drawable.ic_favorite_red_24dp));
+    }
+
+    @Override
+    public void favoriteUnMarked(boolean updateFavorites) {
+        mMenu.getItem(0)
+                .setIcon(ContextCompat.getDrawable(getContext(),
+                        R.drawable.ic_favorite_border_red_24dp));
+
+        if (updateFavorites) {
+            EventBus.getDefault().post(new FavoritesUnMarkedEvent());
+        }
+    }
+
+    private void initialize() {
+
+        // fill details view information
+        Picasso.with(getActivity()).load(movieDetail.getPosterUrl()).into(getLayout().posterImageView);
+        getLayout().viewReleaseDate.setText(movieDetail.getReleasedDateFormatted());
+        getLayout().viewPopularity.setText(movieDetail.getPopularityConverted());
+        getLayout().viewVoteCount.setText(movieDetail.getVoteCount());
+        getLayout().viewVoteAverage.setRating(movieDetail.getVoteAverageAsFloat());
+
+        mPresenter.defineOverviewMessage(movieDetail.getOverview());
+
+        // inflating trailers fragment
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.container_trailer, TrailersFragment.newInstance(movieDetail.getId()))
+                .commit();
+
+        // inflating reviews fragment
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.container_reviews, ReviewsFragment.newInstance(movieDetail.getId()))
+                .commit();
     }
 }

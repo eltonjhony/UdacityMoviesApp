@@ -37,10 +37,10 @@ public class MoviesPresenter extends BasePresenter<MoviesContract.View> implemen
 
     @Override
     public void fetchOrSearchMovies(String query, @ContentType int contentType, int offSet) {
-        if (query == null || query.isEmpty()) {
-            loadMovies(contentType, offSet);
-        } else {
+        if (contentType == ContentType.SEARCH) {
             searchMovies(query, offSet);
+        } else {
+            loadMovies(contentType, offSet);
         }
     }
 
@@ -65,6 +65,8 @@ public class MoviesPresenter extends BasePresenter<MoviesContract.View> implemen
                         if (dataResultWrapper.getPage() == FIRST_PAGE) {
                             getViewOrThrow().showMovies(dataResultWrapper.getData());
                             getViewOrThrow().setupFeaturedVideo(dataResultWrapper.getVideoKey());
+                        } else if (dataResultWrapper.getPage() == 0) {
+                            getViewOrThrow().showMovies(dataResultWrapper.getData());
                         } else {
                             getViewOrThrow().appendMoreMovies(dataResultWrapper.getData());
                         }

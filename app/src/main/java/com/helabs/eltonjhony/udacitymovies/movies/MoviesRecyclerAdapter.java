@@ -14,6 +14,7 @@ import com.helabs.eltonjhony.udacitymovies.R;
 import com.helabs.eltonjhony.udacitymovies.common.BaseHolder;
 import com.helabs.eltonjhony.udacitymovies.data.model.Movie;
 import com.helabs.eltonjhony.udacitymovies.databinding.ContentItemBinding;
+import com.helabs.eltonjhony.udacitymovies.infrastructure.MyLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,14 +78,18 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<MoviesRecyclerAd
 
         @Override
         public void update(Movie movie) {
+
+            String posterUrl = movie.getPosterUrl();
+            MyLog.info("POSTER", posterUrl);
+
             Glide.with(mLayout.thumbnailView.getContext())
-                    .load(movie.getPosterUrl())
+                    .load(posterUrl)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .centerCrop()
                     .placeholder(R.drawable.ic_insert_photo_black_48px)
                     .into(mLayout.thumbnailView);
 
-            if (TextUtils.isEmpty(movie.getPosterUrl())) {
+            if (TextUtils.isEmpty(posterUrl)) {
                 mLayout.titleView.setText(movie.getTitle());
             } else {
                 mLayout.titleView.setText(null);

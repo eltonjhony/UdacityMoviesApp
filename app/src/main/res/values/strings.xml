@@ -3,7 +3,7 @@
 
     <string name="movies_label">Movies</string>
     <string name="search_hint">Find something</string>
-    <string name="data_not_found">Data not found</string>
+    <string name="data_not_found">No movie found</string>
     <string name="popular_label">Most popular</string>
     <string name="now_playing_label">Now Playing</string>
     <string name="top_rated_label">Top rated</string>
@@ -18,4 +18,6 @@
     <string name="no_resume_message">This movie does not have a resume yet.</string>
     <string name="generic_error_message">An unexpected error occurred.</string>
     <string name="says_label">says</string>
+    <string name="favorites_label">Favorites</string>
+    <string name="search_label">Search</string>
 </resources>

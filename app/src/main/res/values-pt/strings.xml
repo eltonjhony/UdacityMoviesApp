@@ -3,7 +3,7 @@
 
     <string name="movies_label">Filmes</string>
     <string name="search_hint">Encontre alguma coisa</string>
-    <string name="data_not_found">Dados não encontrados</string>
+    <string name="data_not_found">Nenhum filme encontrado</string>
     <string name="popular_label">Popular</string>
     <string name="now_playing_label">Em cartaz</string>
     <string name="top_rated_label">Mais votados</string>
@@ -18,4 +18,5 @@
     <string name="no_resume_message">Este filme ainda não possui uma sinopse.</string>
     <string name="generic_error_message">Um erro inesperado aconteceu</string>
     <string name="says_label">Diz</string>
+    <string name="search_label">Busca</string>
 </resources>

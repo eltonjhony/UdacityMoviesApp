@@ -1,5 +1,7 @@
 package com.helabs.eltonjhony.udacitymovies.details;
 
+import com.helabs.eltonjhony.udacitymovies.data.local.FavoritesDAO;
+import com.helabs.eltonjhony.udacitymovies.data.local.LocalDatabase;
 import com.helabs.eltonjhony.udacitymovies.di.FragmentScoped;
 import com.helabs.eltonjhony.udacitymovies.infrastructure.ApplicationMessages;
 
@@ -22,13 +24,19 @@ public class DetailsModule {
 
     @Provides
     @FragmentScoped
+    public FavoritesDAO provideFavoritesDAO(LocalDatabase localDatabase) {
+        return new FavoritesDAO(localDatabase);
+    }
+
+    @Provides
+    @FragmentScoped
     WeakReference<DetailsContract.View> provideView() {
         return mView;
     }
 
     @Provides
     @FragmentScoped
-    DetailsContract.Actions provideDetailsPresenter(ApplicationMessages applicationMessages) {
-        return new DetailsPresenter(mView, applicationMessages);
+    DetailsContract.Actions provideDetailsPresenter(FavoritesDAO favoritesDAO, ApplicationMessages applicationMessages) {
+        return new DetailsPresenter(mView, favoritesDAO, applicationMessages);
     }
 }

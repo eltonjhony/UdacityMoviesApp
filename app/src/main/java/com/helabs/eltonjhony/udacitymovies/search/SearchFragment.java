@@ -28,6 +28,8 @@ public abstract class SearchFragment extends BaseFragment {
     @Inject
     SearcherPreferences mSearcherPref;
 
+    private Menu mMenu;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +39,7 @@ public abstract class SearchFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        mMenu = menu;
         inflater.inflate(R.menu.search_menu, menu);
     }
 
@@ -72,13 +75,17 @@ public abstract class SearchFragment extends BaseFragment {
                         switch (item.getItemId()) {
                             case R.id.search:
                                 mSearcherPref.clear();
-                                searchMovies(null);
                         }
                         return true;
                     }
                 });
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void collapseSearchItem() {
+        mMenu.getItem(0).collapseActionView();
     }
 
     protected String getCurrentQuery() {

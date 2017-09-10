@@ -40,6 +40,10 @@ public class Content implements Serializable {
         return id;
     }
 
+    public String getSimplePosterUrl() {
+        return this.posterUrl;
+    }
+
     public String getPosterUrl() {
         if (TextUtils.isEmpty(this.posterUrl)) {
             return null;
@@ -47,6 +51,10 @@ public class Content implements Serializable {
         StringBuilder builder = new StringBuilder(BASE_POSTER_URL);
         builder.append(IMG_SIZE_185).append("/").append(posterUrl);
         return builder.toString();
+    }
+
+    public String getSimpleBackdropPath() {
+        return this.backdropPath;
     }
 
     public String getBackdropPath() {

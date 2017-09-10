@@ -10,11 +10,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.helabs.eltonjhony.udacitymovies.R;
+import com.helabs.eltonjhony.udacitymovies.bus.FavoritesUnMarkedEvent;
 import com.helabs.eltonjhony.udacitymovies.common.EndlessRecyclerViewScrollListener;
 import com.helabs.eltonjhony.udacitymovies.ui.AnimatingFrameLayout;
 import com.helabs.eltonjhony.udacitymovies.data.model.ContentType;
@@ -25,14 +27,19 @@ import com.helabs.eltonjhony.udacitymovies.details.DetailsActivity;
 import com.helabs.eltonjhony.udacitymovies.infrastructure.preferences.CollapseFeaturedVideoPreferences;
 import com.helabs.eltonjhony.udacitymovies.search.SearchFragment;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.parceler.Parcels;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import static com.helabs.eltonjhony.udacitymovies.data.model.ContentType.FAVORITE;
 import static com.helabs.eltonjhony.udacitymovies.data.model.ContentType.NOW_PLAYING;
 import static com.helabs.eltonjhony.udacitymovies.data.model.ContentType.POPULAR;
+import static com.helabs.eltonjhony.udacitymovies.data.model.ContentType.SEARCH;
 import static com.helabs.eltonjhony.udacitymovies.data.model.ContentType.TOP_RATED;
 import static com.helabs.eltonjhony.udacitymovies.infrastructure.Constants.PreferenceKeys.SHOW_HIDE_KEY;
 
@@ -66,6 +73,7 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getApplicationComponent().plus(new MoviesModule(this)).inject(this);
+        EventBus.getDefault().register(this);
         setRetainInstance(true);
         initialize();
     }
@@ -106,13 +114,14 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
 
     @Override
     public void onDestroy() {
+        EventBus.getDefault().unregister(this);
         this.mPresenter.onDestroy();
         super.onDestroy();
     }
 
     @Override
     protected void searchMovies(String query) {
-        this.mPresenter.fetchOrSearchMovies(query, mContentType, INITIAL_OFF_SET);
+        this.mPresenter.fetchOrSearchMovies(query, getContentType(), INITIAL_OFF_SET);
     }
 
     @Override
@@ -154,6 +163,11 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
         transaction.replace(R.id.youtube_player_fragment, FeaturedVideoFragment.newInstance(videoUrl)).commit();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(FavoritesUnMarkedEvent event) {
+        mPresenter.fetchOrSearchMovies(null, mContentType, INITIAL_OFF_SET);
+    }
+
     private FragmentMoviesBinding getLayout() {
         return mBinding;
     }
@@ -180,14 +194,14 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
             @Override
             public void onLoadMore(int page, int totalItemCount, RecyclerView recyclerView) {
                 setLoading(true);
-                mPresenter.fetchOrSearchMovies(getCurrentQuery(), mContentType, page);
+                mPresenter.fetchOrSearchMovies(getCurrentQuery(), getContentType(), page);
             }
         };
 
         getLayout().movieList.addOnScrollListener(mScrollListener);
 
         getLayout().refreshLayout.setOnRefreshListener(() -> {
-            mPresenter.fetchOrSearchMovies(getCurrentQuery(), mContentType, INITIAL_OFF_SET);
+            mPresenter.fetchOrSearchMovies(getCurrentQuery(), getContentType(), INITIAL_OFF_SET);
         });
     }
 
@@ -209,19 +223,26 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
             switch (item.getItemId()) {
                 case R.id.action_popular:
                     mContentType = POPULAR;
-                    getLayout().movieDescText.setText(R.string.most_popular_label);
+                    collapseSearchItem();
                     break;
 
                 case R.id.action_now_playing:
                     mContentType = NOW_PLAYING;
-                    getLayout().movieDescText.setText(R.string.now_playing_label);
+                    collapseSearchItem();
                     break;
 
                 case R.id.action_top_rated:
                     mContentType = TOP_RATED;
-                    getLayout().movieDescText.setText(R.string.top_rated_label);
+                    collapseSearchItem();
+                    break;
+
+                case R.id.action_favorite:
+                    mContentType = FAVORITE;
+                    collapseSearchItem();
                     break;
             }
+
+            changeMoviesDescLabel();
             mPresenter.loadMovies(mContentType, INITIAL_OFF_SET);
             return true;
         });
@@ -236,5 +257,40 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
             mLayoutManager.scrollToPositionWithOffset(index, top);
         }
     }
+
+    private @ContentType int getContentType() {
+        final String currentQuery = getCurrentQuery();
+        if (!TextUtils.isEmpty(currentQuery)) {
+            mContentType = SEARCH;
+        }
+
+        changeMoviesDescLabel();
+        return mContentType;
+    }
+
+    private void changeMoviesDescLabel() {
+        switch (mContentType) {
+            case POPULAR:
+                getLayout().movieDescText.setText(R.string.popular_label);
+                break;
+
+            case NOW_PLAYING:
+                getLayout().movieDescText.setText(R.string.now_playing_label);
+                break;
+
+            case TOP_RATED:
+                getLayout().movieDescText.setText(R.string.top_rated_label);
+                break;
+
+            case SEARCH:
+                getLayout().movieDescText.setText(R.string.search_label);
+                break;
+
+            case FAVORITE:
+                getLayout().movieDescText.setText(R.string.favorites_label);
+                break;
+        }
+    }
+
 
 }

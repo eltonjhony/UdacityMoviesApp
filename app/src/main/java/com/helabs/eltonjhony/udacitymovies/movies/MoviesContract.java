@@ -3,6 +3,7 @@ package com.helabs.eltonjhony.udacitymovies.movies;
 import android.support.annotation.NonNull;
 
 import com.helabs.eltonjhony.udacitymovies.data.model.ContentType;
+import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
 import com.helabs.eltonjhony.udacitymovies.data.model.Movie;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 
