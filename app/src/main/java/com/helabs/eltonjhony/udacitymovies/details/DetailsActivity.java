@@ -34,7 +34,7 @@ public class DetailsActivity extends BaseActivity {
         getLayout().collapsingToolbar.setTitle(movieDetail.getTitle());
 
         if (savedInstanceState == null) {
-            addFragment(R.id.container_detail, DetailsFragment.newInstance(movieDetail));
+            replaceFragment(R.id.container_detail, DetailsFragment.newInstance(movieDetail));
         }
     }
 

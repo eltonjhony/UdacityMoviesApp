@@ -108,9 +108,9 @@ public class MoviesPresenter extends BasePresenter<MoviesContract.View> implemen
     }
 
     @Override
-    public void openDetails(@NonNull String id) {
+    public void openDetails(@NonNull String id, @ContentType int contentType) {
         getView().setLoading(true);
-        mSubscription = this.mMoviesRepository.getMovieById(id, getLanguage())
+        mSubscription = this.mMoviesRepository.getMovieById(id, getLanguage(), contentType)
                 .subscribe(new Observer<MovieDetail>() {
                     @Override
                     public void onCompleted() {

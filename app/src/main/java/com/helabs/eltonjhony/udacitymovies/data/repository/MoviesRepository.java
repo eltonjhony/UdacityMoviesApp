@@ -10,6 +10,7 @@ import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.data.model.Video;
 import com.helabs.eltonjhony.udacitymovies.data.remote.RemoteMoviesDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.remote.RemoteTrailersDataSource;
+import com.helabs.eltonjhony.udacitymovies.utils.NetworkUtil;
 import com.helabs.eltonjhony.udacitymovies.utils.ParseUtils;
 
 import java.util.ArrayList;
@@ -31,14 +32,17 @@ public class MoviesRepository implements MoviesDataSource {
     private RemoteMoviesDataSource mRemoteDataSource;
     private RemoteTrailersDataSource mRemoteTrailersDataSource;
     private LocalFavoritesDataSource mLocalFavoritesDataSource;
+    private NetworkUtil mNetworkUtil;
 
     @Inject
     public MoviesRepository(RemoteMoviesDataSource remoteDataSource,
                             RemoteTrailersDataSource remoteTrailersDataSource,
-                            LocalFavoritesDataSource mLocalFavoritesDataSource) {
+                            LocalFavoritesDataSource mLocalFavoritesDataSource,
+                            NetworkUtil networkUtil) {
         this.mRemoteDataSource = remoteDataSource;
         this.mRemoteTrailersDataSource = remoteTrailersDataSource;
         this.mLocalFavoritesDataSource = mLocalFavoritesDataSource;
+        this.mNetworkUtil = networkUtil;
     }
 
     @Override
@@ -76,8 +80,13 @@ public class MoviesRepository implements MoviesDataSource {
     }
 
     @Override
-    public Observable<MovieDetail> getMovieById(String movieId, String language) {
-        return this.mRemoteDataSource.getMovieById(movieId, language);
+    public Observable<MovieDetail> getMovieById(String movieId, String language, @ContentType int contentType) {
+
+        if (!mNetworkUtil.isNetworkAvailable() && contentType == ContentType.FAVORITE) {
+            return mLocalFavoritesDataSource.getFavoritesById(movieId);
+        }
+
+        return this.mRemoteDataSource.getMovieById(movieId, language, contentType);
     }
 
     private <T> T getRandomItem(List<T> data) {

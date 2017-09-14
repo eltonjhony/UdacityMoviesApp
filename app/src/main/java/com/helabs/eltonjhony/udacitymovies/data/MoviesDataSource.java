@@ -18,6 +18,6 @@ public interface MoviesDataSource {
 
     Observable<DataResultWrapper<Movie>> searchMovies(String language, String query, int page) throws NoInternetException;
 
-    Observable<MovieDetail> getMovieById(String movieId, String language) throws NoInternetException;
+    Observable<MovieDetail> getMovieById(String movieId, String language, @ContentType int contentType) throws NoInternetException;
 
 }

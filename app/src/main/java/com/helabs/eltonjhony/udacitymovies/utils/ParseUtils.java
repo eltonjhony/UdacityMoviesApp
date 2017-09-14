@@ -2,6 +2,7 @@ package com.helabs.eltonjhony.udacitymovies.utils;
 
 import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
 import com.helabs.eltonjhony.udacitymovies.data.model.Movie;
+import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,5 +26,20 @@ public class ParseUtils {
             movies.add(movie);
         }
         return movies;
+    }
+
+    public static MovieDetail parseFrom(Favorites favorites) {
+        MovieDetail movieDetail = new MovieDetail(
+                favorites.getMovieId(),
+                favorites.getPosterUrl(),
+                favorites.getPopularity(),
+                favorites.getOverview(),
+                favorites.getBackdropPath(),
+                favorites.getVoteAverage(),
+                favorites.getVoteCount(),
+                favorites.getTitle(),
+                favorites.getReleased()
+        );
+        return movieDetail;
     }
 }

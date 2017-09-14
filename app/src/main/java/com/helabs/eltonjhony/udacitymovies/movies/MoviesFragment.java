@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -51,14 +49,10 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     private static final String INDEX = "index";
     private static final String TOP_POSITION = "top";
 
-    @Inject
-    MoviesPresenter mPresenter;
+    @Inject protected MoviesPresenter mPresenter;
+    @Inject protected CollapseFeaturedVideoPreferences mCollapseFeaturedVideoPref;
 
-    @Inject
-    CollapseFeaturedVideoPreferences mCollapseFeaturedVideoPref;
-
-    @ContentType
-    private int mContentType;
+    @ContentType protected int mContentType;
 
     private FragmentMoviesBinding mBinding;
     private MoviesRecyclerAdapter mAdapter;
@@ -85,6 +79,7 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
 
         setupAdapter();
         setupBottomNavigation();
+        setupFeaturedVideo();
         setListeners();
 
         return mBinding.getRoot();
@@ -93,13 +88,10 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        boolean showFeaturedVideo = this.mCollapseFeaturedVideoPref.getBoolean(SHOW_HIDE_KEY);
-        getLayout().youtubePlayerFragment.active(showFeaturedVideo);
-
         if (savedInstanceState != null) {
             retainScrollPosition(savedInstanceState);
         } else {
-            mPresenter.loadMovies(mContentType, INITIAL_OFF_SET);
+            mPresenter.loadMovies(getContentType(), INITIAL_OFF_SET);
         }
     }
 
@@ -113,10 +105,10 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         EventBus.getDefault().unregister(this);
         this.mPresenter.onDestroy();
-        super.onDestroy();
+        super.onDestroyView();
     }
 
     @Override
@@ -164,16 +156,21 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(FavoritesUnMarkedEvent event) {
-        mPresenter.fetchOrSearchMovies(null, mContentType, INITIAL_OFF_SET);
+        mPresenter.fetchOrSearchMovies(null, getContentType(), INITIAL_OFF_SET);
     }
 
-    private FragmentMoviesBinding getLayout() {
-        return mBinding;
-    }
-
-    private void initialize() {
+    protected void initialize() {
         mContentType = POPULAR;
-        mAdapter = new MoviesRecyclerAdapter((position, id) -> mPresenter.openDetails(id));
+        mAdapter = new MoviesRecyclerAdapter((position, id) -> mPresenter.openDetails(id, getContentType()));
+    }
+
+    protected void setupFeaturedVideo() {
+        boolean showFeaturedVideo = this.mCollapseFeaturedVideoPref.getBoolean(SHOW_HIDE_KEY);
+        getLayout().youtubePlayerFragment.active(showFeaturedVideo);
+    }
+
+    protected FragmentMoviesBinding getLayout() {
+        return mBinding;
     }
 
     private void setListeners() {
@@ -216,8 +213,7 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     }
 
     private void setupBottomNavigation() {
-        BottomNavigationView mBottomNavigation = getLayout().moviesBottomNavigation;
-        mBottomNavigation.setOnNavigationItemSelectedListener(item -> {
+        getLayout().moviesBottomNavigation.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.action_popular:
                     mContentType = POPULAR;
@@ -233,11 +229,6 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
                     mContentType = TOP_RATED;
                     collapseSearchItem();
                     break;
-
-                case R.id.action_favorite:
-                    mContentType = FAVORITE;
-                    collapseSearchItem();
-                    break;
             }
 
             changeMoviesDescLabel();
@@ -247,6 +238,9 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     }
 
     private void retainScrollPosition(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return;
+        }
         boolean hasIndex = savedInstanceState.containsKey(INDEX);
         boolean hasPosition = savedInstanceState.containsKey(TOP_POSITION);
         if (hasIndex && hasPosition) {
@@ -289,6 +283,4 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
                 break;
         }
     }
-
-
 }

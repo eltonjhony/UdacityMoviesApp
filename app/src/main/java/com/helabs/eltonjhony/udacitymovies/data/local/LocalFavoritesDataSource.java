@@ -6,9 +6,13 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.helabs.eltonjhony.udacitymovies.data.FavoritesDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
+import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
+import com.helabs.eltonjhony.udacitymovies.utils.ParseUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
 
 /**
  * Created by eltonjhony on 09/09/17.
@@ -83,6 +87,44 @@ public class LocalFavoritesDataSource implements FavoritesDataSource {
 
     @Override
     public void getFavoritesById(String movieId, OnGetFavoriteByIdCallback callback) {
+        Favorites favorites = getById(movieId);
+        callback.onLoaded(favorites);
+    }
+
+    @Override
+    public Observable<MovieDetail> getFavoritesById(String movieId) {
+        return Observable.just(ParseUtils.parseFrom(getById(movieId)));
+    }
+
+    @Override
+    public void insert(Favorites favorites) {
+        SQLiteDatabase db = localDatabase.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(BACKDROP_PATH, favorites.getBackdropPath());
+        values.put(MOVIE_ID, favorites.getMovieId());
+        values.put(OVERVIEW, favorites.getOverview());
+        values.put(POPULARITY, favorites.getPopularity());
+        values.put(POSTER_URL, favorites.getPosterUrl());
+        values.put(RELEASE, favorites.getReleased());
+        values.put(TITLE, favorites.getTitle());
+        values.put(VOTE_AVERAGE, favorites.getVoteAverage());
+        values.put(VOTE_COUNT, favorites.getVoteCount());
+
+        db.insert(FAVORITES_TABLE, null, values);
+        db.close();
+    }
+
+    @Override
+    public void delete(Favorites favorites) {
+        SQLiteDatabase db = localDatabase.getWritableDatabase();
+        db.delete(FAVORITES_TABLE, MOVIE_ID + " = ?", new String[] {
+                String.valueOf(favorites.getMovieId())
+        });
+        db.close();
+    }
+
+    private Favorites getById(String movieId) {
         Favorites favorites = null;
         SQLiteDatabase db = localDatabase.getWritableDatabase();
 
@@ -118,36 +160,7 @@ public class LocalFavoritesDataSource implements FavoritesDataSource {
             }
         }
 
-        callback.onLoaded(favorites);
-
         db.close();
-    }
-
-    @Override
-    public void insert(Favorites favorites) {
-        SQLiteDatabase db = localDatabase.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(BACKDROP_PATH, favorites.getBackdropPath());
-        values.put(MOVIE_ID, favorites.getMovieId());
-        values.put(OVERVIEW, favorites.getOverview());
-        values.put(POPULARITY, favorites.getPopularity());
-        values.put(POSTER_URL, favorites.getPosterUrl());
-        values.put(RELEASE, favorites.getReleased());
-        values.put(TITLE, favorites.getTitle());
-        values.put(VOTE_AVERAGE, favorites.getVoteAverage());
-        values.put(VOTE_COUNT, favorites.getVoteCount());
-
-        db.insert(FAVORITES_TABLE, null, values);
-        db.close();
-    }
-
-    @Override
-    public void delete(Favorites favorites) {
-        SQLiteDatabase db = localDatabase.getWritableDatabase();
-        db.delete(FAVORITES_TABLE, MOVIE_ID + " = ?", new String[] {
-                String.valueOf(favorites.getMovieId())
-        });
-        db.close();
+        return favorites;
     }
 }

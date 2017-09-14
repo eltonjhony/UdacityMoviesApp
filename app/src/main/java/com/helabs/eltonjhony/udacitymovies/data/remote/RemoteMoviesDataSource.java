@@ -65,7 +65,7 @@ public class RemoteMoviesDataSource extends BaseDataSource implements MoviesData
     }
 
     @Override
-    public Observable<MovieDetail> getMovieById(String movieId, String language) {
+    public Observable<MovieDetail> getMovieById(String movieId, String language, @ContentType int contentType) {
 
         if (!networkUtil.isNetworkAvailable()) {
             return Observable.error(new NoInternetException(applicationMessages.getNoNetworkAvailableMessage()));

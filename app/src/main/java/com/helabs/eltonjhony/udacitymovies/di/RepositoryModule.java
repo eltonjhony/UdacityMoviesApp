@@ -40,8 +40,12 @@ public class RepositoryModule {
     @Provides
     MoviesRepository provideMoviesRepository(RemoteMoviesDataSource remoteMoviesDataSource,
                                              RemoteTrailersDataSource remoteTrailersDataSource,
-                                             LocalFavoritesDataSource localFavoritesDataSource) {
-        return new MoviesRepository(remoteMoviesDataSource, remoteTrailersDataSource, localFavoritesDataSource);
+                                             LocalFavoritesDataSource localFavoritesDataSource,
+                                             NetworkUtil networkUtil) {
+        return new MoviesRepository(remoteMoviesDataSource,
+                remoteTrailersDataSource,
+                localFavoritesDataSource,
+                networkUtil);
     }
 
     @Singleton
