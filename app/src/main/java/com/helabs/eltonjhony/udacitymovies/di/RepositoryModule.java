@@ -1,5 +1,7 @@
 package com.helabs.eltonjhony.udacitymovies.di;
 
+import android.content.Context;
+
 import com.helabs.eltonjhony.udacitymovies.data.local.LocalDatabase;
 import com.helabs.eltonjhony.udacitymovies.data.local.LocalFavoritesDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.remote.RemoteReviewsDataSource;
@@ -74,7 +76,7 @@ public class RepositoryModule {
 
     @Singleton
     @Provides
-    LocalFavoritesDataSource provideLocalFavoritesDataSource(LocalDatabase localDatabase) {
-        return new LocalFavoritesDataSource(localDatabase);
+    LocalFavoritesDataSource provideLocalFavoritesDataSource(Context context) {
+        return new LocalFavoritesDataSource(context);
     }
 }

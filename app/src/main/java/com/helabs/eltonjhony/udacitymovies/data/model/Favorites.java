@@ -1,5 +1,9 @@
 package com.helabs.eltonjhony.udacitymovies.data.model;
 
+import android.database.Cursor;
+
+import com.helabs.eltonjhony.udacitymovies.data.local.table.FavoritesTable;
+
 /**
  * Created by eltonjhony on 09/09/17.
  */
@@ -27,6 +31,18 @@ public class Favorites {
         this.overview = overview;
         this.voteAverage = voteAverage;
         this.voteCount = voteCount;
+    }
+
+    public Favorites(Cursor cursor) {
+        this.movieId = cursor.getString(cursor.getColumnIndex(FavoritesTable.MOVIE_ID));
+        this.posterUrl = cursor.getString(cursor.getColumnIndex(FavoritesTable.POSTER_URL));;
+        this.backdropPath = cursor.getString(cursor.getColumnIndex(FavoritesTable.BACKDROP_PATH));;
+        this.title = cursor.getString(cursor.getColumnIndex(FavoritesTable.TITLE));;
+        this.released = cursor.getString(cursor.getColumnIndex(FavoritesTable.RELEASE));;
+        this.popularity = cursor.getString(cursor.getColumnIndex(FavoritesTable.POPULARITY));;
+        this.overview = cursor.getString(cursor.getColumnIndex(FavoritesTable.OVERVIEW));;
+        this.voteAverage = cursor.getString(cursor.getColumnIndex(FavoritesTable.VOTE_AVERAGE));;
+        this.voteCount = cursor.getString(cursor.getColumnIndex(FavoritesTable.VOTE_COUNT));;
     }
 
     public static Favorites set(MovieDetail movieDetail) {

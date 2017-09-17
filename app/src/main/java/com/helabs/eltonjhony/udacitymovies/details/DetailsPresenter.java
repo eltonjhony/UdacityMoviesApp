@@ -3,6 +3,7 @@ package com.helabs.eltonjhony.udacitymovies.details;
 import android.text.TextUtils;
 
 import com.helabs.eltonjhony.udacitymovies.data.local.LocalFavoritesDataSource;
+import com.helabs.eltonjhony.udacitymovies.data.local.table.FavoritesTable;
 import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.infrastructure.ApplicationMessages;
@@ -46,22 +47,24 @@ public class DetailsPresenter extends BasePresenter<DetailsContract.View> implem
     @Override
     public void markAsFavorite(MovieDetail movieDetail) {
         final Favorites request = Favorites.set(movieDetail);
-        localFavoritesDataSource.getFavoritesById(request.getMovieId(), favorites -> {
-            if (favorites != null) {
-                localFavoritesDataSource.delete(favorites);
-                getView().favoriteUnMarked(true);
-            } else {
-                localFavoritesDataSource.insert(request);
-                getView().favoriteMarked();
-            }
-        });
+        localFavoritesDataSource.getFavoritesById(request.getMovieId(), null,
+                favorites -> {
+                    if (favorites != null) {
+                        localFavoritesDataSource.delete(favorites);
+                        getView().favoriteUnMarked(true);
+                    } else {
+                        localFavoritesDataSource.insert(request);
+                        getView().favoriteMarked(true);
+                    }
+                });
     }
 
     @Override
     public void checkFavorites(String movieId) {
-        localFavoritesDataSource.getFavoritesById(movieId, favorites -> {
+        localFavoritesDataSource.getFavoritesById(movieId, null,
+                favorites -> {
             if (favorites != null) {
-                getView().favoriteMarked();
+                getView().favoriteMarked(false);
             } else {
                 getView().favoriteUnMarked(false);
             }

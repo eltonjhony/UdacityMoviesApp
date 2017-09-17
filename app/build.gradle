@@ -25,17 +25,17 @@ android {
 
             buildConfigField("int", "LOG_LEVEL", "0")
             buildConfigField("String", "BASE_URL", "\"http://api.themoviedb.org/3/\"")
-            buildConfigField("String", "API_KEY", "\"\"")
-            buildConfigField("String", "YOUTUBE_KEY", "\"\t\"")
         }
         debug {
             minifyEnabled false
 
             buildConfigField("int", "LOG_LEVEL", "4")
             buildConfigField("String", "BASE_URL", "\"http://api.themoviedb.org/3/\"")
-            buildConfigField("String", "API_KEY", "\"\"")
-            buildConfigField("String", "YOUTUBE_KEY", "\"\t\"")
         }
+    }
+    buildTypes.each {
+        it.buildConfigField 'String', 'API_KEY', ApiToken
+        it.buildConfigField 'String', 'YOUTUBE_KEY', YoutubeToken
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

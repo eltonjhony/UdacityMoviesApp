@@ -23,13 +23,13 @@ public interface FavoritesDataSource {
         void onLoaded(Favorites favorites);
     }
 
-    void loadAllFavorites(OnLoadFavoritesCallback callback);
+    void loadAllFavorites(String[] projection, final String sortOrder, OnLoadFavoritesCallback callback);
 
-    void getFavoritesById(String movieId, OnGetFavoriteByIdCallback callback);
+    void getFavoritesById(String movieId, String[] projection, OnGetFavoriteByIdCallback callback);
 
     void insert(Favorites favorites);
 
     void delete(Favorites favorites);
 
-    Observable<MovieDetail> getFavoritesById(String movieId);
+    Observable<MovieDetail> getFavoritesById(String movieId, String[] projection);
 }

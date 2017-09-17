@@ -28,7 +28,7 @@ public abstract class BasePresenter<V> implements BasePresenterContract<V> {
     @UiThread
     @Override
     public V getView() {
-        return this.mView.get();
+        return this.mView != null ? this.mView.get() : null;
     }
 
     @UiThread

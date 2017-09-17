@@ -12,7 +12,7 @@ public interface DetailsContract {
 
         void setOverview(String overview);
 
-        void favoriteMarked();
+        void favoriteMarked(boolean updateFavorites);
 
         void favoriteUnMarked(boolean updateFavorites);
     }

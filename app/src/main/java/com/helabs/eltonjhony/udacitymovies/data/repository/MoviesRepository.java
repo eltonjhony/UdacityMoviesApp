@@ -2,6 +2,7 @@ package com.helabs.eltonjhony.udacitymovies.data.repository;
 
 import com.helabs.eltonjhony.udacitymovies.data.MoviesDataSource;
 import com.helabs.eltonjhony.udacitymovies.data.local.LocalFavoritesDataSource;
+import com.helabs.eltonjhony.udacitymovies.data.local.table.FavoritesTable;
 import com.helabs.eltonjhony.udacitymovies.data.model.ContentType;
 import com.helabs.eltonjhony.udacitymovies.data.model.DataResultWrapper;
 import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
@@ -51,7 +52,7 @@ public class MoviesRepository implements MoviesDataSource {
         // Get favorites from LocalDataSource
         if (contentType == ContentType.FAVORITE) {
             final List<Favorites> favorites = new ArrayList<>();
-            mLocalFavoritesDataSource.loadAllFavorites(favorites::addAll);
+            mLocalFavoritesDataSource.loadAllFavorites(null, FavoritesTable.ORDER_BY, favorites::addAll);
             return Observable.just(new DataResultWrapper<>(ParseUtils.parseFrom(favorites)));
         }
 
@@ -83,7 +84,7 @@ public class MoviesRepository implements MoviesDataSource {
     public Observable<MovieDetail> getMovieById(String movieId, String language, @ContentType int contentType) {
 
         if (!mNetworkUtil.isNetworkAvailable() && contentType == ContentType.FAVORITE) {
-            return mLocalFavoritesDataSource.getFavoritesById(movieId);
+            return mLocalFavoritesDataSource.getFavoritesById(movieId, null);
         }
 
         return this.mRemoteDataSource.getMovieById(movieId, language, contentType);

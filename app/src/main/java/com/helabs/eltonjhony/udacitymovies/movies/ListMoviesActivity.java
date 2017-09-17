@@ -35,8 +35,11 @@ public class ListMoviesActivity extends BaseActivity {
     @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        replaceFragment(R.id.menu_container, MenuFragment.newInstance(R.id.main_content));
-        replaceFragment(R.id.main_content, MoviesFragment.newInstance());
+
+        if (savedInstanceState == null) {
+            replaceFragment(R.id.menu_container, MenuFragment.newInstance(R.id.main_content));
+            replaceFragment(R.id.main_content, MoviesFragment.newInstance());
+        }
     }
 
     private void setupToolbar(){

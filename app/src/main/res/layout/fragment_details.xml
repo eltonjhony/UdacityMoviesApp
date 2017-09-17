@@ -2,18 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark"
-        android:fillViewport="true">
-
         <LinearLayout
             android:id="@+id/detail_layout_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@color/colorPrimaryDark"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_horizontal_margin">
 
@@ -164,6 +158,5 @@
                 android:layout_below="@+id/container_trailer" />
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
 
 </layout>

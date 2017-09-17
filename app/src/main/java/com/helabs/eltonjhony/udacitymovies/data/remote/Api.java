@@ -17,14 +17,8 @@ import rx.Observable;
  */
 public interface Api {
 
-    @GET("./movie/popular")
-    Observable<Response<DataResultWrapper<Movie>>> fetchPopularMovies(@Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
-
-    @GET("./movie/top_rated")
-    Observable<Response<DataResultWrapper<Movie>>> fetchTopRatedMovies(@Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
-
-    @GET("./movie/now_playing")
-    Observable<Response<DataResultWrapper<Movie>>> fetchNowPlayingMovies(@Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
+    @GET("./movie/{sort}")
+    Observable<Response<DataResultWrapper<Movie>>> fetchMovies(@Path("sort") String sort, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
 
     @GET("./search/movie")
     Observable<Response<DataResultWrapper<Movie>>> searchMovies(@Query("api_key") String apiKey, @Query("language") String language, @Query("query") String query, @Query("page") int page);

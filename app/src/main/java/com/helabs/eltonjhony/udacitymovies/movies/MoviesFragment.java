@@ -5,7 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.helabs.eltonjhony.udacitymovies.R;
-import com.helabs.eltonjhony.udacitymovies.bus.FavoritesUnMarkedEvent;
+import com.helabs.eltonjhony.udacitymovies.bus.FavoritesChangedEvent;
 import com.helabs.eltonjhony.udacitymovies.common.EndlessRecyclerViewScrollListener;
 import com.helabs.eltonjhony.udacitymovies.ui.AnimatingFrameLayout;
 import com.helabs.eltonjhony.udacitymovies.data.model.ContentType;
@@ -30,6 +30,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.parceler.Parcels;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -76,10 +77,11 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_movies, container, false);
+        setRetainInstance(true);
 
         setupAdapter();
         setupBottomNavigation();
-        setupFeaturedVideo();
+        setupFeaturedVideo(true);
         setListeners();
 
         return mBinding.getRoot();
@@ -105,10 +107,25 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
     }
 
     @Override
-    public void onDestroyView() {
+    public void onDetach() {
+        super.onDetach();
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
         EventBus.getDefault().unregister(this);
         this.mPresenter.onDestroy();
-        super.onDestroyView();
+        super.onDestroy();
     }
 
     @Override
@@ -139,7 +156,9 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
 
     @Override
     public void showError(String message) {
-        Snackbar.make(getLayout().moviesLayout, message, Snackbar.LENGTH_LONG).show();
+        if (getLayout().moviesLayout.getContext() != null) {
+            Snackbar.make(getLayout().moviesLayout, message, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -150,12 +169,13 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
 
     @Override
     public void setupFeaturedVideo(String videoUrl) {
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.youtube_player_fragment, FeaturedVideoFragment.newInstance(videoUrl)).commit();
+        replaceFragment(FeaturedVideoFragment.newInstance(videoUrl),
+                R.id.youtube_player_fragment,
+                getChildFragmentManager());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(FavoritesUnMarkedEvent event) {
+    public void onEvent(FavoritesChangedEvent event) {
         mPresenter.fetchOrSearchMovies(null, getContentType(), INITIAL_OFF_SET);
     }
 
@@ -164,9 +184,15 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
         mAdapter = new MoviesRecyclerAdapter((position, id) -> mPresenter.openDetails(id, getContentType()));
     }
 
-    protected void setupFeaturedVideo() {
-        boolean showFeaturedVideo = this.mCollapseFeaturedVideoPref.getBoolean(SHOW_HIDE_KEY);
-        getLayout().youtubePlayerFragment.active(showFeaturedVideo);
+    protected void setupFeaturedVideo(boolean visible) {
+        if (visible) {
+            boolean showFeaturedVideo = this.mCollapseFeaturedVideoPref.getBoolean(SHOW_HIDE_KEY);
+            getLayout().youtubePlayerFragment.active(showFeaturedVideo);
+            getLayout().hideShowBtn.setVisibility(View.VISIBLE);
+        } else {
+            getLayout().youtubePlayerFragment.active(false);
+            getLayout().hideShowBtn.setVisibility(View.GONE);
+        }
     }
 
     protected FragmentMoviesBinding getLayout() {
@@ -231,6 +257,7 @@ public class MoviesFragment extends SearchFragment implements MoviesContract.Vie
                     break;
             }
 
+            setupFeaturedVideo(true);
             changeMoviesDescLabel();
             mPresenter.loadMovies(mContentType, INITIAL_OFF_SET);
             return true;

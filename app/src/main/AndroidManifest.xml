@@ -27,6 +27,12 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".data.local.FavoritesContentProvider"
+            android:authorities="${applicationId}"
+            android:exported="false" />
+
         <activity
             android:name="com.helabs.eltonjhony.udacitymovies.details.DetailsActivity"
             android:theme="@style/AppThemeDetail"

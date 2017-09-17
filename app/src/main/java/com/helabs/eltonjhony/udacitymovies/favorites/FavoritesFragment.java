@@ -1,5 +1,7 @@
 package com.helabs.eltonjhony.udacitymovies.favorites;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.helabs.eltonjhony.udacitymovies.movies.MoviesFragment;
@@ -22,8 +24,8 @@ public class FavoritesFragment extends MoviesFragment {
     }
 
     @Override
-    protected void setupFeaturedVideo() {
-        getLayout().youtubePlayerFragment.active(false);
-        getLayout().hideShowBtn.setVisibility(View.GONE);
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupFeaturedVideo(false);
     }
 }

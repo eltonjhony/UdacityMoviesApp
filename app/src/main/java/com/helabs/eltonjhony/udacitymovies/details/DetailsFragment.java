@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.helabs.eltonjhony.udacitymovies.R;
-import com.helabs.eltonjhony.udacitymovies.bus.FavoritesUnMarkedEvent;
+import com.helabs.eltonjhony.udacitymovies.bus.FavoritesChangedEvent;
 import com.helabs.eltonjhony.udacitymovies.common.BaseFragment;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.databinding.FragmentDetailsBinding;
@@ -40,6 +40,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     private MovieDetail movieDetail;
     private Menu mMenu;
     private FragmentDetailsBinding mBinding;
+    private int scrollX;
+    private int scrollY;
 
     public static DetailsFragment newInstance(MovieDetail movieDetail) {
         DetailsFragment fragment = new DetailsFragment();
@@ -54,6 +56,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         super.onCreate(savedInstanceState);
         getApplicationComponent().plus(new DetailsModule(this)).inject(this);
         EventBus.getDefault().register(this);
+        setHasOptionsMenu(true);
+        setRetainInstance(true);
         movieDetail = Parcels.unwrap(getArguments().getParcelable(MOVIE_ARGS));
     }
 
@@ -61,10 +65,13 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_details, container, false);
-        setHasOptionsMenu(true);
-        initialize();
-
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initialize();
     }
 
     public FragmentDetailsBinding getLayout() {
@@ -117,10 +124,14 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     }
 
     @Override
-    public void favoriteMarked() {
+    public void favoriteMarked(boolean updateFavorites) {
         mMenu.getItem(0)
                 .setIcon(ContextCompat.getDrawable(getContext(),
                         R.drawable.ic_favorite_red_24dp));
+
+        if (updateFavorites) {
+            EventBus.getDefault().post(new FavoritesChangedEvent());
+        }
     }
 
     @Override
@@ -130,7 +141,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
                         R.drawable.ic_favorite_border_red_24dp));
 
         if (updateFavorites) {
-            EventBus.getDefault().post(new FavoritesUnMarkedEvent());
+            EventBus.getDefault().post(new FavoritesChangedEvent());
         }
     }
 

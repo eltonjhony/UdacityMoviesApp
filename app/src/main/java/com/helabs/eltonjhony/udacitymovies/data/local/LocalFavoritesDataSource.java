@@ -1,16 +1,20 @@
 package com.helabs.eltonjhony.udacitymovies.data.local;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 
 import com.helabs.eltonjhony.udacitymovies.data.FavoritesDataSource;
+import com.helabs.eltonjhony.udacitymovies.data.local.table.FavoritesTable;
 import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;
 import com.helabs.eltonjhony.udacitymovies.utils.ParseUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -20,147 +24,100 @@ import rx.Observable;
 
 public class LocalFavoritesDataSource implements FavoritesDataSource {
 
-    public static final String FAVORITES_TABLE = "favorites";
-    public static final String MOVIE_ID = "movieId";
-    public static final String POSTER_URL = "posterUrl";
-    public static final String BACKDROP_PATH = "backdropPath";
-    public static final String TITLE = "title";
-    public static final String RELEASE = "released";
-    public static final String POPULARITY = "popularity";
-    public static final String OVERVIEW = "overview";
-    public static final String VOTE_AVERAGE = "voteAverage";
-    public static final String VOTE_COUNT = "voteCount";
+    private Context context;
 
-    private LocalDatabase localDatabase;
-
-    public LocalFavoritesDataSource(LocalDatabase localDatabase) {
-        this.localDatabase = localDatabase;
-    }
-
-    public static String createTable() {
-        return "CREATE TABLE IF NOT EXISTS "
-                + FAVORITES_TABLE + "("
-                + MOVIE_ID + " TEXT PRIMARY KEY, "
-                + POSTER_URL + " TEXT, "
-                + BACKDROP_PATH + " TEXT, "
-                + TITLE + " TEXT, "
-                + RELEASE + " TEXT, "
-                + POPULARITY + " TEXT, "
-                + OVERVIEW + " TEXT, "
-                + VOTE_AVERAGE + " TEXT, "
-                + VOTE_COUNT + " TEXT" + ")";
-    }
-
-    public static String dropTable() {
-        return "DROP TABLE IF EXISTS " + FAVORITES_TABLE;
+    @Inject
+    public LocalFavoritesDataSource(Context context) {
+        this.context = context;
     }
 
     @Override
-    public void loadAllFavorites(OnLoadFavoritesCallback callback) {
+    public void loadAllFavorites(String[] projection, final String sortOrder, OnLoadFavoritesCallback callback) {
 
-        SQLiteDatabase db = localDatabase.getWritableDatabase();
-
-        final List<Favorites> results = new ArrayList<>();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + FAVORITES_TABLE, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                Favorites favorites = new Favorites(
-                        cursor.getString(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getString(4),
-                        cursor.getString(5),
-                        cursor.getString(6),
-                        cursor.getString(7),
-                        cursor.getString(8));
-                results.add(favorites);
-            } while (cursor.moveToNext());
+        if (projection == null) {
+            projection = (String[]) FavoritesTable.ALL_COLUMNS.toArray();
         }
 
-        callback.onLoaded(results);
+        Cursor cursor = context.getContentResolver().query(FavoritesContentProvider.FAVORITES_CONTENT_URI,
+                projection, null, null, sortOrder);
 
-        db.close();
+        List<Favorites> favoriteList = getFavoriteList(cursor);
+        callback.onLoaded(favoriteList);
     }
 
     @Override
-    public void getFavoritesById(String movieId, OnGetFavoriteByIdCallback callback) {
-        Favorites favorites = getById(movieId);
-        callback.onLoaded(favorites);
+    public void getFavoritesById(String movieId, String[] projection, OnGetFavoriteByIdCallback callback) {
+
+        if (projection == null) {
+            projection = (String[]) FavoritesTable.ALL_COLUMNS.toArray();
+        }
+
+        Cursor cursor = getById(movieId, projection);
+
+        callback.onLoaded(getFavorite(cursor));
     }
 
     @Override
-    public Observable<MovieDetail> getFavoritesById(String movieId) {
-        return Observable.just(ParseUtils.parseFrom(getById(movieId)));
+    public Observable<MovieDetail> getFavoritesById(String movieId, String[] projection) {
+        Cursor cursor = getById(movieId, projection);
+        Favorites favorite = getFavorite(cursor);
+        return Observable.just(ParseUtils.parseFrom(favorite));
     }
 
     @Override
     public void insert(Favorites favorites) {
-        SQLiteDatabase db = localDatabase.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(BACKDROP_PATH, favorites.getBackdropPath());
-        values.put(MOVIE_ID, favorites.getMovieId());
-        values.put(OVERVIEW, favorites.getOverview());
-        values.put(POPULARITY, favorites.getPopularity());
-        values.put(POSTER_URL, favorites.getPosterUrl());
-        values.put(RELEASE, favorites.getReleased());
-        values.put(TITLE, favorites.getTitle());
-        values.put(VOTE_AVERAGE, favorites.getVoteAverage());
-        values.put(VOTE_COUNT, favorites.getVoteCount());
+        values.put(FavoritesTable.BACKDROP_PATH, favorites.getBackdropPath());
+        values.put(FavoritesTable.MOVIE_ID, favorites.getMovieId());
+        values.put(FavoritesTable.OVERVIEW, favorites.getOverview());
+        values.put(FavoritesTable.POPULARITY, favorites.getPopularity());
+        values.put(FavoritesTable.POSTER_URL, favorites.getPosterUrl());
+        values.put(FavoritesTable.RELEASE, favorites.getReleased());
+        values.put(FavoritesTable.TITLE, favorites.getTitle());
+        values.put(FavoritesTable.VOTE_AVERAGE, favorites.getVoteAverage());
+        values.put(FavoritesTable.VOTE_COUNT, favorites.getVoteCount());
 
-        db.insert(FAVORITES_TABLE, null, values);
-        db.close();
+        context.getContentResolver().insert(FavoritesContentProvider.FAVORITES_CONTENT_URI, values);
     }
 
     @Override
     public void delete(Favorites favorites) {
-        SQLiteDatabase db = localDatabase.getWritableDatabase();
-        db.delete(FAVORITES_TABLE, MOVIE_ID + " = ?", new String[] {
-                String.valueOf(favorites.getMovieId())
-        });
-        db.close();
+        context.getContentResolver().delete(Uri.parse(FavoritesContentProvider.FAVORITES_CONTENT_URI + "/" +
+                favorites.getMovieId()), null, null);
     }
 
-    private Favorites getById(String movieId) {
-        Favorites favorites = null;
-        SQLiteDatabase db = localDatabase.getWritableDatabase();
+    private Cursor getById(String movieId, String[] projection) {
+        return context.getContentResolver().query(FavoritesContentProvider.FAVORITES_CONTENT_URI, projection,
+                FavoritesTable.WHERE_ID_EQUALS, new String[]{movieId}, null);
+    }
 
-        Cursor cursor = db.query(FAVORITES_TABLE, new String[]{
-                        MOVIE_ID,
-                        POSTER_URL,
-                        BACKDROP_PATH,
-                        TITLE,
-                        RELEASE,
-                        POPULARITY,
-                        OVERVIEW,
-                        VOTE_AVERAGE,
-                        VOTE_COUNT
-                }, MOVIE_ID + "=?", new String[]{movieId},
-                null,
-                null,
-                null,
-                null
-        );
+    private List<Favorites> getFavoriteList(final Cursor cursor) {
+
+        List<Favorites> favoritesList = new ArrayList<>();
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Favorites favorites = new Favorites(cursor);
+                favoritesList.add(favorites);
+            }
+            cursor.close();
+        }
+
+        return favoritesList;
+    }
+
+    private Favorites getFavorite(final Cursor cursor) {
+
+        Favorites favorites = null;
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                favorites = new Favorites(
-                        cursor.getString(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getString(4),
-                        cursor.getString(5),
-                        cursor.getString(6),
-                        cursor.getString(7),
-                        cursor.getString(8));
+                favorites = new Favorites(cursor);
             }
+            cursor.close();
         }
 
-        db.close();
         return favorites;
     }
 }

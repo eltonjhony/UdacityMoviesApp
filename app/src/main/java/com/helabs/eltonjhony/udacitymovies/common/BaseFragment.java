@@ -27,7 +27,7 @@ public abstract class BaseFragment extends Fragment {
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.addToBackStack(getBackStackKey(fragment));
         transaction.replace(id, fragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 
     protected void popBackStack(FragmentManager manager) {

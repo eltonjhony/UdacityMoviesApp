@@ -20,22 +20,53 @@ public class DetailsActivity extends BaseActivity {
 
     public static final String MOVIE_EXTRA = "com.helabs.eltonjhony.MOVIE_DETAIL";
 
+    private static final String IS_COLLAPSED = "isCollapsed";
+    private static final String SCROLL_POSITION = "SCROLL_POSITION";
+
     private ActivityDetailsBinding mBinding;
+    private boolean isCollapsed = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_details);
+
         initialize();
         setupAppBar();
 
         MovieDetail movieDetail = Parcels.unwrap(getIntent().getParcelableExtra(MOVIE_EXTRA));
         Picasso.with(this).load(movieDetail.getBackdropPath()).into(getLayout().image);
         getLayout().collapsingToolbar.setTitle(movieDetail.getTitle());
+        getLayout().appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            isCollapsed = verticalOffset == 0;
+        });
 
         if (savedInstanceState == null) {
             replaceFragment(R.id.container_detail, DetailsFragment.newInstance(movieDetail));
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getLayout().appBarLayout.setExpanded(isCollapsed);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_COLLAPSED, isCollapsed);
+        outState.putIntArray(SCROLL_POSITION,
+                new int[]{ getLayout().scrollView.getScrollX(), getLayout().scrollView.getScrollY()});
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        isCollapsed = savedInstanceState.getBoolean(IS_COLLAPSED);
+        final int[] position = savedInstanceState.getIntArray(SCROLL_POSITION);
+        if(position != null)
+            getLayout().scrollView.post(() -> getLayout().scrollView.scrollTo(position[0], position[1]));
     }
 
     @Override

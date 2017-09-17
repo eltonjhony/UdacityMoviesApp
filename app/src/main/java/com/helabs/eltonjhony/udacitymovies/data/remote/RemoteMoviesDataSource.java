@@ -80,11 +80,11 @@ public class RemoteMoviesDataSource extends BaseDataSource implements MoviesData
     private Observable<Response<DataResultWrapper<Movie>>> getMovieEndpointByType(@ContentType int contentType, int offSet) {
         switch (contentType) {
             case POPULAR:
-                return mApi.fetchPopularMovies(getApiKey(), getLanguage(), offSet);
+                return mApi.fetchMovies("popular", getApiKey(), getLanguage(), offSet);
             case NOW_PLAYING:
-                return mApi.fetchNowPlayingMovies(getApiKey(), getLanguage(), offSet);
+                return mApi.fetchMovies("now_playing", getApiKey(), getLanguage(), offSet);
             case TOP_RATED:
-                return mApi.fetchTopRatedMovies(getApiKey(), getLanguage(), offSet);
+                return mApi.fetchMovies("top_rated", getApiKey(), getLanguage(), offSet);
             default:
                 throw new RuntimeException("Invalid option " + contentType);
         }

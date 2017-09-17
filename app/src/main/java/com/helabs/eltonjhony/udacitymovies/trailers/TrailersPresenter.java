@@ -79,7 +79,9 @@ public class TrailersPresenter extends BasePresenter<TrailersContract.View> impl
 
                     @Override
                     public void onError(Throwable e) {
-                        getView().hideTrailerSection();
+                        if (isViewAttached()) {
+                            getView().hideTrailerSection();
+                        }
                     }
 
                     @Override
