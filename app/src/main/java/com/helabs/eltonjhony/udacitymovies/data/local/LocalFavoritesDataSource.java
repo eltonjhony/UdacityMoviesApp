@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.helabs.eltonjhony.udacitymovies.data.FavoritesDataSource;
+import com.helabs.eltonjhony.udacitymovies.data.local.provider.FavoritesContentProvider;
 import com.helabs.eltonjhony.udacitymovies.data.local.table.FavoritesTable;
 import com.helabs.eltonjhony.udacitymovies.data.model.Favorites;
 import com.helabs.eltonjhony.udacitymovies.data.model.MovieDetail;

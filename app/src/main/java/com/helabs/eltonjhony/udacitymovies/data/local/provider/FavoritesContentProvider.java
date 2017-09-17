@@ -1,4 +1,4 @@
-package com.helabs.eltonjhony.udacitymovies.data.local;
+package com.helabs.eltonjhony.udacitymovies.data.local.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.helabs.eltonjhony.udacitymovies.BuildConfig;
+import com.helabs.eltonjhony.udacitymovies.data.local.LocalDatabase;
 import com.helabs.eltonjhony.udacitymovies.data.local.table.FavoritesTable;
 
 /**
