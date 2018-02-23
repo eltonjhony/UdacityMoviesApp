@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 
-import com.helabs.eltonjhony.udacitymovies.common.BaseTextView;
 import com.helabs.eltonjhony.udacitymovies.utils.FontCacheUtil;
 
 /**

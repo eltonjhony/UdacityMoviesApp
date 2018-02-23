@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimaryDark"
                 tools:ignore="MergeRootFrame"
-                tools:context=".details.DetailsActivity"/>
+                tools:context=".ui.details.DetailsActivity"/>
 
         </android.support.v4.widget.NestedScrollView>
 

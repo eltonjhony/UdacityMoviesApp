@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.helabs.eltonjhony.udacitymovies.movies.ListMoviesActivity">
+        <activity android:name=".ui.movies.ListMoviesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,17 +34,17 @@
             android:exported="false" />
 
         <activity
-            android:name="com.helabs.eltonjhony.udacitymovies.details.DetailsActivity"
+            android:name=".ui.details.DetailsActivity"
             android:theme="@style/AppThemeDetail"
-            android:parentActivityName="com.helabs.eltonjhony.udacitymovies.movies.ListMoviesActivity">
+            android:parentActivityName=".ui.movies.ListMoviesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="com.helabs.eltonjhony.udacitymovies.trailers.PlayerActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="com.helabs.eltonjhony.udacitymovies.details.DetailsActivity" />
+        <activity android:name=".ui.trailers.PlayerActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".ui.details.DetailsActivity" />
         </activity>
     </application>
 
